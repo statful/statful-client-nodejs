@@ -1,0 +1,30 @@
+{
+  "name": "telemetry-client-nodejs",
+  "description": "NodeJS Client for the Telemetron",
+  "author": {
+    "name": "Jose Fonseca",
+    "email": "jose.fonseca@mindera.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/mindera/telemetry-client-nodejs.git"
+  },
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "main": "telemetry.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "publishConfig": {
+    "registry": "http://nexus.mindera/content/repositories/npm_internal/"
+  },
+  "dependencies": {
+    "blocked": "^1.1.0",
+    "dns": "^0.2.2",
+    "memwatch": "^0.2.2",
+    "merge": "^1.2.0"
+  }
+}
