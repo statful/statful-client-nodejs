@@ -31,6 +31,24 @@ module.exports = function (grunt) {
             test: {
                 src: ['test/*.js']
             }
+        },
+        bump: {
+            options: {
+                files: ['package.json'],
+                updateConfigs: [],
+                commit: true,
+                commitMessage: 'Bump version v%VERSION%',
+                commitFiles: ['package.json'],
+                createTag: true,
+                tagName: '%VERSION%',
+                tagMessage: 'Version %VERSION%',
+                push: true,
+                pushTo: 'origin',
+                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+                globalReplace: false,
+                prereleaseName: false,
+                regExp: false
+            }
         }
     });
 
@@ -38,6 +56,22 @@ module.exports = function (grunt) {
     grunt.registerTask('test', [
         'jshint',
         'mochaTest'
+    ]);
+
+    grunt.registerTask('default', [
+        'test'
+    ]);
+
+    grunt.registerTask('release:major', [
+        'bump:major'
+    ]);
+
+    grunt.registerTask('release:minor', [
+        'bump:minor'
+    ]);
+
+    grunt.registerTask('release:patch', [
+        'bump:patch'
     ]);
 
 };
