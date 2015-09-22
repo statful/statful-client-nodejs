@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "blocked": "^1.1.0",
-    "memwatch-next": "^0.2.9",
+    "memwatch": "^0.2.2",
     "merge": "^1.2.0"
   },
   "devDependencies": {
