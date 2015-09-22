@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://bitbucket.org/mindera/telemetry-client-nodejs.git"
   },
-  "version": "2.0.0",
+  "version": "2.1.0",
   "engines": {
     "node": ">=0.8"
   },
