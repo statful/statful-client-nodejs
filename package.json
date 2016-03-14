@@ -18,9 +18,6 @@
   "scripts": {
     "test": "grunt test"
   },
-  "publishConfig": {
-    "registry": "http://nexus.mindera/content/repositories/npm_internal/"
-  },
   "dependencies": {
     "blocked": "^1.1.0",
     "merge": "^1.2.0",
