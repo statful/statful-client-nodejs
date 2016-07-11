@@ -7,7 +7,6 @@ module.exports = function (grunt) {
     // Load all grunt tasks
     require('load-grunt-tasks')(grunt);
 
-
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
@@ -21,15 +20,30 @@ module.exports = function (grunt) {
                 src: ['Gruntfile.js']
             },
             js: {
-                src: ['*.js', 'lib/**/*.js']
+                src: ['lib/**/*.js']
             },
             test: {
-                src: ['test/**/*.js']
+                src: ['spec/**/*.js']
             }
         },
         mochaTest: {
             test: {
-                src: ['test/*.js']
+                src: ['spec/*.js']
+            }
+        },
+        mocha_istanbul: {
+            coveralls: {
+                src: ['spec'],
+                options: {
+                    check: {
+                        lines: 93,
+                        statements:93,
+                        branches: 83,
+                        functions: 94
+                    },
+                    root: './lib',
+                    reportFormats: ['lcov']
+                }
             }
         },
         bump: {
@@ -55,7 +69,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', [
         'jshint',
-        'mochaTest'
+        'mochaTest',
+        'mocha_istanbul'
     ]);
 
     grunt.registerTask('default', [
@@ -73,5 +88,4 @@ module.exports = function (grunt) {
     grunt.registerTask('release:patch', [
         'bump:patch'
     ]);
-
 };
