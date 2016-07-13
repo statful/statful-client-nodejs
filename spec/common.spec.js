@@ -17,18 +17,18 @@ var httpPort = Math.floor(Math.random() * 20000) + 10001;
 var apiConf = {
     host: '127.0.0.1',
     port: httpPort,
-    protocol: 'http',
-    token: 'my-token'
+    token: 'my-token',
+    secure: false
 };
 
 describe('When sending metrics', function () {
+
     it('should send metrics through UDP', function (done) {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 1
@@ -39,9 +39,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
@@ -52,7 +52,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 2
@@ -64,9 +63,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
             done();
         }
     });
@@ -77,8 +76,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
-            transport: 'api',
+            transport: 'http',
             api: apiConf,
             flushSize: 1
         }, logger);
@@ -88,9 +86,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
-
             httpServer.stop();
+
+            expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
@@ -101,8 +99,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
-            transport: 'api',
+            transport: 'http',
             api: apiConf,
             compression: true,
             flushSize: 1
@@ -113,9 +110,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
-
             httpServer.stop();
+
+            expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
@@ -126,8 +123,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
-            transport: 'api',
+            transport: 'http',
             api: apiConf,
             flushSize: 2
         }, logger);
@@ -138,9 +134,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
-
             httpServer.stop();
+
+            expect(lines).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
             done();
         }
     });
@@ -151,7 +147,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushInterval: 10
@@ -162,9 +157,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
@@ -175,7 +170,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 1
@@ -186,9 +180,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^my_namespace.my_metric 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^my_namespace.my_metric 1 \d+$/);
             done();
         }
     });
@@ -199,7 +193,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 1,
@@ -211,9 +204,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application\.my_metric,cluster=test 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric,cluster=test 1 \d+$/);
             done();
         }
     });
@@ -224,7 +217,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 1,
@@ -236,9 +228,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application\.my_metric,app=test 1 \d+$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric,app=test 1 \d+$/);
             done();
         }
     });
@@ -249,7 +241,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 1
@@ -260,9 +251,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
-
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
             done();
         }
     });
@@ -275,7 +266,6 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
             transport: 'udp',
             port: udpPort,
             flushSize: 2
@@ -287,10 +277,10 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
-
             udpServer.stop();
             randomStub.restore();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
 
             done();
         }
@@ -299,12 +289,11 @@ describe('When sending metrics', function () {
     it('should throw exception when api token is not configured', function() {
         var conf = {
             systemStats: false,
-            autoDiagnostics: false,
-            transport: 'api',
+            transport: 'http',
             api: {
                 host: '127.0.0.1',
                 port: httpPort,
-                protocol: 'http'
+                secure: false
             },
             flushSize: 1
         };
@@ -318,8 +307,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            autoDiagnostics: false,
-            transport: 'api',
+            transport: 'http',
             api: apiConf,
             flushSize: 1
         }, logger);
@@ -329,9 +317,9 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
-
             httpServer.stop();
+
+            expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
@@ -348,5 +336,164 @@ describe('When sending metrics', function () {
         /*jshint -W030 */
         expect(victim.close.calledOnce).to.be.truthy;
         victim.close.restore();
+    });
+
+    it('should configure global namespace', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            namespace: 'my_namespace'
+        }, logger);
+
+        // When
+        victim.put('my_metric', {}, 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^my_namespace.my_metric 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should override global configuration', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            namespace: 'my_namespace'
+        }, logger);
+
+        // When
+        victim.put('my_metric', {}, 1, null, null, null, 'my_other_namespace');
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^my_other_namespace.my_metric 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should handle empty default config', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {}
+        }, logger);
+
+        // When
+        victim.put('my_metric', {}, 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should instantiate client without logger', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1
+        });
+
+        // When
+        victim.put('my_metric', {}, 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should throw when aggregation frequency configuration is invalid', function () {
+        var conf = {
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    aggFreq: {}
+                }
+            }
+        };
+
+        expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
+    });
+
+    it('should throw when aggregation configuration is invalid', function () {
+        var conf = {
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    agg: {}
+                }
+            }
+        };
+
+        expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
+    });
+
+    it('should throw when tag configuration is invalid', function () {
+        var conf = {
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    tags: []
+                }
+            }
+        };
+
+        expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
+    });
+
+    it('should throw when aggregation type is invalid', function () {
+        var conf = {
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    agg: ['sum', 'non existent']
+                }
+            }
+        };
+
+        expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
     });
 });

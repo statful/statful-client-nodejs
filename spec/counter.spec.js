@@ -15,7 +15,6 @@ describe('When sending counter metrics', function () {
 
     var victim = new Client({
         systemStats: false,
-        autoDiagnostics: false,
         transport: 'udp',
         port: udpPort,
         flushSize: 1
@@ -26,57 +25,249 @@ describe('When sending counter metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.inc('my_metric', 1);
+        victim.counter('my_metric', 1);
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.counter.my_metric \d+ \d+ sum,count,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric \d+ \d+ sum,count,10$/);
             done();
         }
     });
-    
+
     it('should send counter with custom aggregations', function (done) {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
-    
+
         // When
-        victim.inc('my_metric', 1, {}, ['avg']);
-    
+        victim.counter('my_metric', 1, {}, ['avg']);
+
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ avg,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,avg,10$/);
             done();
         }
     });
-    
+
     it('should send counter with custom tags', function (done) {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
-    
+
         // When
-        victim.inc('my_metric', 1, {cluster: 'test'});
-    
+        victim.counter('my_metric', 1, {cluster: 'test'});
+
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.counter.my_metric,cluster=test 1 \d+ sum,count,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric,cluster=test 1 \d+ sum,count,10$/);
             done();
         }
     });
-    
+
     it('should send counter with custom aggregation frequency', function (done) {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
-    
+
         // When
-        victim.inc('my_metric', 1, {}, null, 100);
-    
+        victim.counter('my_metric', 1, {}, null, 100);
+
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            done();
+        }
+    });
+
+    it('should configure default tags for counters', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    tags: {cluster: 'test'}
+                }
+            }
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric,cluster=test 1 \d+ sum,count,10$/);
+            done();
+        }
+    });
+
+    it('should merge default counter tags', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    tags: { env: 'qa' }
+                }
+            }
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1, {cluster: 'test'});
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric,cluster=test,env=qa 1 \d+ sum,count,10$/);
+            done();
+        }
+    });
+
+    it('should configure default aggregations for counters', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    agg: ['sum']
+                }
+            }
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,10$/);
+            done();
+        }
+    });
+
+
+    it('should configure default aggregation frequency for counters', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    aggFreq: 100
+                }
+            }
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            done();
+        }
+    });
+
+    it('should override default counter aggregation frequency', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                counter: {
+                    aggFreq: 99
+                }
+            }
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1, null, null, 100);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            done();
+        }
+    });
+
+    it('should merge unique aggregations', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1, {}, ['sum']);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,10$/);
+            done();
+        }
+    });
+
+    it('should handle empty default counter config', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: { counter: {}}
+        }, logger);
+
+        // When
+        victim.counter('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,10$/);
             done();
         }
     });
