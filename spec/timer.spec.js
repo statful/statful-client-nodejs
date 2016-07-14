@@ -41,7 +41,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {}, ['last']);
+        victim.time('my_metric', 1, {agg: ['last']});
 
         // Then
         function onResponse(lines) {
@@ -57,7 +57,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {cluster: 'test'});
+        victim.time('my_metric', 1, {tags: {cluster: 'test'}});
 
         // Then
         function onResponse(lines) {
@@ -72,7 +72,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {}, null, 100);
+        victim.time('my_metric', 1, {aggFreq: 100});
 
         // Then
         function onResponse(lines) {
@@ -128,7 +128,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, {cluster: 'test'});
+        victim.time('my_metric', 1, {tags: {cluster: 'test'}});
 
         // Then
         function onResponse(lines) {
@@ -213,7 +213,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, null, null, 100);
+        victim.time('my_metric', 1, {aggFreq: 100});
 
         // Then
         function onResponse(lines) {
@@ -236,7 +236,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, {}, ['sum']);
+        victim.time('my_metric', 1, {agg: ['sum']});
 
         // Then
         function onResponse(lines) {
