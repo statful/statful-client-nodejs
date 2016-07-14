@@ -29,7 +29,7 @@ The simplest way of sending a _timer_ metric to Statful can be done like this:
 ### Counter ###
 Or, if you prefer to send a _counter_ metric to Statful:
 
-    statful.counter('transactions');
+    statful.counter('transactions', 1);
 
 ### Gauge ###
 And finally, a _gauge_ metric to Statful can be preformed in the following way:
@@ -99,13 +99,13 @@ To configure Gauge defaults configuration, you should use the _gauge_ attribute.
 ### Building metrics tags ###
 (name, value, tags, agg, aggFreq, namespace)
 
-    statful.counter('transactions', 1, {host, 'localhost', status: 'SUCCESS'});
+    statful.counter('transactions', 1, {tags: {host, 'localhost', status: 'SUCCESS'}});
 
 ### Adding metrics with aggregations ###
 
-    statful.counter('transactions', 1, {}, ['avg', 'p90'], 10);
+    statful.counter('transactions', 1, {agg: ['avg', 'p90'], aggFreq: 30});
 
 ### Adding metrics with namespace ###
     
-    statful.counter('transactions', 1, {}, [], 10, 'my-namespace');
+    statful.counter('transactions', 1, {namespace: 'my-namespace'});
     
