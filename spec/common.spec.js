@@ -35,7 +35,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -58,8 +58,8 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric1', {}, 1);
-        victim.put('my_metric2', {}, 1);
+        victim.put('my_metric1', 1);
+        victim.put('my_metric2', 1);
 
         // Then
         function onResponse(lines) {
@@ -82,7 +82,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -106,7 +106,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -129,8 +129,8 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric1', {}, 1);
-        victim.put('my_metric2', {}, 1);
+        victim.put('my_metric1', 1);
+        victim.put('my_metric2', 1);
 
         // Then
         function onResponse(lines) {
@@ -153,7 +153,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -176,7 +176,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1, null, null, null,'my_namespace');
+        victim.put('my_metric', 1, {namespace: 'my_namespace'});
 
         // Then
         function onResponse(lines) {
@@ -200,7 +200,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -224,7 +224,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -247,7 +247,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1, ['avg'], 10, 100);
+        victim.put('my_metric', 1, {tags: {}, agg: ['avg'], aggFreq: 10, sampleRate: 100});
 
         // Then
         function onResponse(lines) {
@@ -272,8 +272,8 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1, ['avg'], 10, 100);
-        victim.put('my_metric', {}, 1, ['avg'], 10, 1);
+        victim.put('my_metric', 1, {agg: ['avg'], aggFreq: 10, sampleRate: 100});
+        victim.put('my_metric', 1, { agg: ['avg'], aggFreq: 10, sampleRate: 1});
 
         // Then
         function onResponse(lines) {
@@ -313,7 +313,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -351,7 +351,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -375,7 +375,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1, null, null, null, 'my_other_namespace');
+        victim.put('my_metric', 1, {namespace: 'my_other_namespace'});
 
         // Then
         function onResponse(lines) {
@@ -399,7 +399,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -422,7 +422,7 @@ describe('When sending metrics', function () {
         });
 
         // When
-        victim.put('my_metric', {}, 1);
+        victim.put('my_metric', 1);
 
         // Then
         function onResponse(lines) {

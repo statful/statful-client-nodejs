@@ -41,7 +41,7 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {}, ['avg']);
+        victim.gauge('my_metric', 1, {agg: ['avg']});
     
         // Then
         function onResponse(lines) {
@@ -57,7 +57,7 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {cluster: 'test'});
+        victim.gauge('my_metric', 1, {tags: {cluster: 'test'}});
     
         // Then
         function onResponse(lines) {
@@ -73,7 +73,7 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {}, null, 100);
+        victim.gauge('my_metric', 1, {aggFreq: 100});
     
         // Then
         function onResponse(lines) {
@@ -129,7 +129,7 @@ describe('When sending gauge metrics', function () {
         }, logger);
 
         // When
-        victim.gauge('my_metric', 1, {cluster: 'test'});
+        victim.gauge('my_metric', 1, {tags: {cluster: 'test'}});
 
         // Then
         function onResponse(lines) {
@@ -214,7 +214,7 @@ describe('When sending gauge metrics', function () {
         }, logger);
 
         // When
-        victim.gauge('my_metric', 1, null, null, 100);
+        victim.gauge('my_metric', 1, {aggFreq: 100});
 
         // Then
         function onResponse(lines) {
@@ -237,7 +237,7 @@ describe('When sending gauge metrics', function () {
         }, logger);
 
         // When
-        victim.gauge('my_metric', 1, {}, ['sum']);
+        victim.gauge('my_metric', 1, {agg: ['sum']});
 
         // Then
         function onResponse(lines) {
