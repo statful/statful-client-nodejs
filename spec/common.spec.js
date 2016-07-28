@@ -298,7 +298,7 @@ describe('When sending metrics', function () {
             flushSize: 1
         };
 
-        expect(Client.bind(Client, conf, logger)).to.throw('Telemetron API Token not defined');
+        expect(Client.bind(Client, conf, logger)).to.throw('Statful API Token not defined');
     });
 
     it('should handle HTTP errors', function (done) {

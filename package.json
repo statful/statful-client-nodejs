@@ -1,6 +1,6 @@
 {
-  "name": "telemetry-client-nodejs",
-  "description": "NodeJS Client for the Telemetron",
+  "name": "statful-client",
+  "description": "NodeJS Client for the Statful",
   "author": {
     "name": "Jose Fonseca",
     "email": "jose.fonseca@mindera.com"
@@ -14,7 +14,7 @@
   "engines": {
     "node": ">=0.8"
   },
-  "main": "telemetry.js",
+  "main": "statful.js",
   "scripts": {
     "test": "grunt test"
   },
