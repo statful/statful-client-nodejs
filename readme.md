@@ -1,4 +1,7 @@
-# Statful Client for NodeJS #
+Statful Client for NodeJS
+==============
+
+[![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/statful/statful-client-nodejs.svg?branch=master)](https://https://travis-ci.org/statful/statful-client-nodejs)
 
 NodeJS client for sending metrics to Statful
 
@@ -110,3 +113,5 @@ To configure Gauge defaults configuration, you should use the _gauge_ attribute.
     
     statful.counter('transactions', 1, {namespace: 'my-namespace'});
     
+[npm-url]: https://npmjs.org/package/statful-client
+[npm-image]: https://badge.fury.io/js/statful-client.svg
