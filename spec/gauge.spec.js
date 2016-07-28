@@ -15,7 +15,6 @@ describe('When sending gauge metrics', function () {
 
     var victim = new Client({
         systemStats: false,
-        autoDiagnostics: false,
         transport: 'udp',
         port: udpPort,
         flushSize: 1
@@ -30,8 +29,9 @@ describe('When sending gauge metrics', function () {
 
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.gauge.my_metric \d+ \d+ last,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric \d+ \d+ last,10$/);
             done();
         }
     });
@@ -41,12 +41,13 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {}, ['avg']);
+        victim.gauge('my_metric', 1, {agg: ['avg']});
     
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ avg,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,avg,10$/);
             done();
         }
     });
@@ -56,12 +57,13 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {cluster: 'test'});
+        victim.gauge('my_metric', 1, {tags: {cluster: 'test'}});
     
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.gauge.my_metric,cluster=test 1 \d+ last,10$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric,cluster=test 1 \d+ last,10$/);
             done();
         }
     });
@@ -71,12 +73,201 @@ describe('When sending gauge metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
     
         // When
-        victim.gauge('my_metric', 1, {}, null, 100);
+        victim.gauge('my_metric', 1, {aggFreq: 100});
     
         // Then
         function onResponse(lines) {
-            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,100$/);
             udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,100$/);
+            done();
+        }
+    });
+
+    it('should configure default tags for gauges', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                gauge: {
+                    tags: {cluster: 'test'}
+                }
+            }
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric,cluster=test 1 \d+ last,10$/);
+            done();
+        }
+    });
+
+    it('should merge default gauge tags', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                gauge: {
+                    tags: { env: 'qa' }
+                }
+            }
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1, {tags: {cluster: 'test'}});
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric,cluster=test,env=qa 1 \d+ last,10$/);
+            done();
+        }
+    });
+
+    it('should configure default aggregations for gauges', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                gauge: {
+                    agg: ['sum']
+                }
+            }
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ sum,10$/);
+            done();
+        }
+    });
+
+
+    it('should configure default aggregation frequency for gauges', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                gauge: {
+                    aggFreq: 100
+                }
+            }
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,100$/);
+            done();
+        }
+    });
+
+    it('should override default gauge aggregation frequency', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: {
+                gauge: {
+                    aggFreq: 99
+                }
+            }
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1, {aggFreq: 100});
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,100$/);
+            done();
+        }
+    });
+
+    it('should merge unique aggregations', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1, {agg: ['sum']});
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,sum,10$/);
+            done();
+        }
+    });
+
+    it('should handle empty default gauge config', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            default: { gauge: {}}
+        }, logger);
+
+        // When
+        victim.gauge('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+
+            expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,10$/);
             done();
         }
     });
