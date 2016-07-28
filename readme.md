@@ -1,6 +1,6 @@
 # Statful Client for NodeJS #
 
-NodeJS Client to send metrics to Statful
+NodeJS client for sending metrics to Statful
 
 ## Installation
 
