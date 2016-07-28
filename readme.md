@@ -97,6 +97,7 @@ To configure Gauge defaults configuration, you should use the _gauge_ attribute.
 ## Building metrics ##
 
 ### Building metrics tags ###
+
 (name, value, tags, agg, aggFreq, namespace)
 
     statful.counter('transactions', 1, {tags: {host, 'localhost', status: 'SUCCESS'}});
