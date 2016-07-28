@@ -1,6 +1,6 @@
 # Statful Client for NodeJS #
 
-NodeJS Client to the Telemetron
+NodeJS Client to send metrics to Statful
 
 ## Installation
 

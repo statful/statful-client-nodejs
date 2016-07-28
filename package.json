@@ -1,6 +1,6 @@
 {
   "name": "statful-client",
-  "description": "NodeJS Client for the Telemetron",
+  "description": "NodeJS Client for the Statful",
   "author": {
     "name": "Jose Fonseca",
     "email": "jose.fonseca@mindera.com"
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://bitbucket.org/mindera/telemetry-client-nodejs.git"
   },
-  "version": "3.0.0",
+  "version": "3.1.0",
   "engines": {
     "node": ">=0.8"
   },
