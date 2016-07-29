@@ -1,4 +1,5 @@
-# Statful Client for NodeJS
+Statful Client for NodeJS
+==============
 
 [![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/statful/statful-client-nodejs.svg?branch=master)](https://https://travis-ci.org/statful/statful-client-nodejs)
 
@@ -11,7 +12,6 @@ Staful client for NodeJS written in Javascript. This client is intended to gathe
 * [Quick Start](#quick-start)
 * [Examples](#examples)
 * [Reference](#reference)
-* [Still Need Help?](#still-need-help)
 * [Authors](#authors)
 * [License](#license)
 
@@ -135,8 +135,8 @@ var statful = new Statful(config);
 
 Creates a configuration defining a value for every available option.
 
-``javascript
-vr Statful = require('statful-client');
+```javascript
+var Statful = require('statful-client');
 
 var config = {
     default: {
@@ -163,7 +163,7 @@ var statful = new Statful(config);
 Creates a simple client configuration and use it to send some metrics.
 
 ```javascript
-va Statful = require('statful-client');
+var Statful = require('statful-client');
 
 var config = {
     app: 'AccountService'
