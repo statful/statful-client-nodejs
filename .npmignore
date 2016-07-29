@@ -1,0 +1,8 @@
+node_modules
+.idea
+lib
+coverage
+test
+Gruntfile.js
+.travis.yml
+.jshintrc
