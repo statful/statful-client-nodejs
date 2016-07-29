@@ -1,7 +1,7 @@
 Statful Client for NodeJS
 ==============
 
-[![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/statful/statful-client-nodejs.svg?branch=master)](https://https://travis-ci.org/statful/statful-client-nodejs)
+[![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/statful/statful-client-nodejs.svg?branch=master)](https://travis-ci.org/statful/statful-client-nodejs)
 
 Staful client for NodeJS written in Javascript. This client is intended to gather metrics and send them to Statful.
 
