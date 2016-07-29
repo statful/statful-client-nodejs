@@ -234,5 +234,5 @@ Read the methods options reference bellow to get more information about the defa
 
 Statful NodeJS Client is available under the MIT license. See the [LICENSE](https://raw.githubusercontent.com/statful/statful-client-objc/master/LICENSE) file for more information.
     
-[npm-url]: https://npmjs.org/package/statful-client-nodejs
-[npm-image]: https://badge.fury.io/js/statful-client-nodejs.svg
+[npm-url]: https://npmjs.org/package/statful-client
+[npm-image]: https://badge.fury.io/js/statful-client.svg
