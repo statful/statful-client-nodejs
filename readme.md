@@ -19,7 +19,7 @@ Staful client for NodeJS written in Javascript. This client is intended to gathe
 
 | Statful client Version | Tested NodeJS versions  |
 |:---|:---|
-| 1.0.x | 0.10, 0.12, 4, _Stable_ |
+| 1.0.0 | `0.10`, `0.12`, `4` and _Stable_ |
 
 ## Installation
 
