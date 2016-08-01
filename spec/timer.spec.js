@@ -10,7 +10,7 @@ var logger = require('bunyan').createLogger({name: 'tests'});
 var expect = require('chai').expect;
 
 describe('When sending timer metrics', function () {
-    
+
     var udpPort = Math.floor(Math.random() * 10000) + 1000;
 
     var victim = new Client({
@@ -25,7 +25,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1);
+        victim.timer('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -41,7 +41,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {agg: ['last']});
+        victim.timer('my_metric', 1, {agg: ['last']});
 
         // Then
         function onResponse(lines) {
@@ -57,7 +57,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {tags: {cluster: 'test'}});
+        victim.timer('my_metric', 1, {tags: {cluster: 'test'}});
 
         // Then
         function onResponse(lines) {
@@ -72,7 +72,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.time('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 100});
 
         // Then
         function onResponse(lines) {
@@ -100,7 +100,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1);
+        victim.timer('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -128,7 +128,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, {tags: {cluster: 'test'}});
+        victim.timer('my_metric', 1, {tags: {cluster: 'test'}});
 
         // Then
         function onResponse(lines) {
@@ -156,7 +156,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1);
+        victim.timer('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -185,7 +185,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1);
+        victim.timer('my_metric', 1);
 
         // Then
         function onResponse(lines) {
@@ -213,7 +213,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 100});
 
         // Then
         function onResponse(lines) {
@@ -236,7 +236,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1, {agg: ['sum']});
+        victim.timer('my_metric', 1, {agg: ['sum']});
 
         // Then
         function onResponse(lines) {
@@ -260,7 +260,7 @@ describe('When sending timer metrics', function () {
         }, logger);
 
         // When
-        victim.time('my_metric', 1);
+        victim.timer('my_metric', 1);
 
         // Then
         function onResponse(lines) {
