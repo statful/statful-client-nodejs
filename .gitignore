@@ -1,4 +1,5 @@
 node_modules
+coverage
 
 # WebStorm / IntelliJ IDEA project files
 .idea
