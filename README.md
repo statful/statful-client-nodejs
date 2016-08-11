@@ -221,8 +221,8 @@ Read the methods options reference bellow to get more information about the defa
 
 | Option | Description | Type | Default for Counter | Default for Gauge | Default for Timer |
 |:---|:---|:---|:---|:---|:---|
-| _agg_ | Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, min, max` | `array` | `['avg', 'p90']` | `last]` | `['avg', 'p90', 'count']` |
-| _aggFreq_ | Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 20, 180, 300` | `number` | `10` | `10` | `10` |
+| _agg_ | Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, min, max` | `array` | `['avg', 'p90']` | `[last]` | `['avg', 'p90', 'count']` |
+| _aggFreq_ | Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `number` | `10` | `10` | `10` |
 | _namespace_ | Defines the namespace of the metric. It overrides the global namespace configuration. | `string` | `application` | `application` | `application` |
 | _tags_ | Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `object` | `{}` | `{}` | `{ unit: 'ms' }` |
 
