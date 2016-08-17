@@ -497,4 +497,79 @@ describe('When sending metrics', function () {
 
         expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
     });
+
+    /*it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', {});
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 2,
+            dryRun: true
+        }, logger);
+
+        sinon.spy(victim.logger, "debug");
+
+        // When
+        victim.put('my_metric', 1);
+        victim.aggregatedPut('my_metric', 1, 'avg', 60);
+
+        // Then
+        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+
+        httpsServer.stop();
+        victim.logger.debug.restore();
+        done();
+    });*/
+
+    it('should send uncompressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 2
+        }, logger);
+
+        // When
+        victim.aggregatedPut('my_metric1', 1, 'avg', 60);
+        victim.aggregatedPut('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should send compressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            compression: true,
+            flushSize: 2
+        }, logger);
+
+        // When
+        victim.aggregatedPut('my_metric1', 1, 'avg', 60);
+        victim.aggregatedPut('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+            done();
+        }
+    });
 });
