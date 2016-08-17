@@ -25,7 +25,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.timer('my_metric', 1);
+        victim.timer('my_metric', 1, null, false);
 
         // Then
         function onResponse(lines) {
@@ -71,14 +71,15 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
+
         // When
-        victim.timer('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });
@@ -179,7 +180,7 @@ describe('When sending timer metrics', function () {
             flushSize: 1,
             default: {
                 timer: {
-                    aggFreq: 100
+                    aggFreq: 120
                 }
             }
         }, logger);
@@ -191,7 +192,7 @@ describe('When sending timer metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });
@@ -207,19 +208,19 @@ describe('When sending timer metrics', function () {
             flushSize: 1,
             default: {
                 timer: {
-                    aggFreq: 99
+                    aggFreq: 60
                 }
             }
         }, logger);
 
         // When
-        victim.timer('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });

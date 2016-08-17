@@ -35,7 +35,7 @@ describe('When sending metrics', function () {
         }, logger);
 
         // When
-        victim.put('my_metric', 1);
+        victim.put('my_metric', 1, null, false);
 
         // Then
         function onResponse(lines) {
@@ -243,17 +243,18 @@ describe('When sending metrics', function () {
             systemStats: false,
             transport: 'udp',
             port: udpPort,
-            flushSize: 1
+            flushSize: 1,
+            sampleRate: 80
         }, logger);
 
         // When
-        victim.put('my_metric', 1, {tags: {}, agg: ['avg'], aggFreq: 10, sampleRate: 100});
+        victim.put('my_metric', 1, {tags: {}, agg: ['avg'], aggFreq: 10}, false);
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
+            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 80$/);
             done();
         }
     });
@@ -268,19 +269,20 @@ describe('When sending metrics', function () {
             systemStats: false,
             transport: 'udp',
             port: udpPort,
-            flushSize: 2
+            flushSize: 2,
+            sampleRate: 100
         }, logger);
 
         // When
-        victim.put('my_metric', 1, {agg: ['avg'], aggFreq: 10, sampleRate: 100});
-        victim.put('my_metric', 1, { agg: ['avg'], aggFreq: 10, sampleRate: 1});
+        victim.put('my_metric', 1, {agg: ['avg'], aggFreq: 10}, false);
+        victim.put('my_metric', 2, { agg: ['avg'], aggFreq: 10}, false);
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
             randomStub.restore();
 
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 100$/);
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+ avg,10\napplication\.my_metric 2 \d+ avg,10$/);
 
             done();
         }
@@ -333,9 +335,10 @@ describe('When sending metrics', function () {
         victim.close();
 
         // Then
-        /*jshint -W030 */
-        expect(victim.close.calledOnce).to.be.truthy;
+
+        expect(victim.close.calledOnce).to.be.true;
         victim.close.restore();
+
     });
 
     it('should configure global namespace', function (done) {
