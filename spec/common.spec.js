@@ -17,8 +17,7 @@ var httpPort = Math.floor(Math.random() * 20000) + 10001;
 var apiConf = {
     host: '127.0.0.1',
     port: httpPort,
-    token: 'my-token',
-    secure: false
+    token: 'my-token'
 };
 
 describe('When sending metrics', function () {
@@ -294,8 +293,7 @@ describe('When sending metrics', function () {
             transport: 'http',
             api: {
                 host: '127.0.0.1',
-                port: httpPort,
-                secure: false
+                port: httpPort
             },
             flushSize: 1
         };
