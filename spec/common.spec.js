@@ -5,7 +5,7 @@
 var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
-var httpServer = require('./tools/http-server');
+var httpsServer = require('./tools/https-server');
 var logger = require('bunyan').createLogger({name: 'tests'});
 
 var expect = require('chai').expect;
@@ -70,9 +70,9 @@ describe('When sending metrics', function () {
         }
     });
 
-    it('should send metrics through HTTP', function (done) {
+    it('should send metrics through HTTPS', function (done) {
         // Given
-        httpServer.start(httpPort, '127.0.0.1', onResponse);
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
 
         var victim = new Client({
             systemStats: false,
@@ -86,16 +86,16 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            httpServer.stop();
+            httpsServer.stop();
 
             expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();
         }
     });
 
-    it('should send compressed metrics through HTTP', function (done) {
+    it('should send compressed metrics through HTTPS', function (done) {
         // Given
-        httpServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
+        httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
 
         var victim = new Client({
             systemStats: false,
@@ -110,7 +110,7 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            httpServer.stop();
+            httpsServer.stop();
 
             expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();
@@ -119,7 +119,7 @@ describe('When sending metrics', function () {
 
     it('should send metrics with fixed size flushes', function (done) {
         // Given
-        httpServer.start(httpPort, '127.0.0.1', onResponse);
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
 
         var victim = new Client({
             systemStats: false,
@@ -134,7 +134,7 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            httpServer.stop();
+            httpsServer.stop();
 
             expect(lines).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
             done();
@@ -303,9 +303,9 @@ describe('When sending metrics', function () {
         expect(Client.bind(Client, conf, logger)).to.throw('Statful API Token not defined');
     });
 
-    it('should handle HTTP errors', function (done) {
+    it('should handle HTTPS errors', function (done) {
         // Given
-        httpServer.startWithError(httpPort, '127.0.0.1', onResponse);
+        httpsServer.startWithError(httpPort, '127.0.0.1', onResponse);
 
         var victim = new Client({
             systemStats: false,
@@ -319,7 +319,7 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
-            httpServer.stop();
+            httpsServer.stop();
 
             expect(lines).to.match(/^application.my_metric 1 \d+$/);
             done();

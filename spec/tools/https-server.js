@@ -1,7 +1,15 @@
 'use strict';
 
-var http = require('http');
+var https = require('https');
 var zlib = require("zlib");
+var fs = require('fs');
+
+var options = {
+    key: fs.readFileSync('./spec/fixtures/keys/agent-key.pem'),
+    cert: fs.readFileSync('./spec/fixtures/keys/agent-cert.pem'),
+    ciphers: 'ALL',
+    secureProtocol: 'TLSv1_method'
+};
 
 var server;
 
@@ -13,7 +21,9 @@ exports.start = function (port, address, callback, responseCode, uncompress) {
     responseCode = responseCode || 201;
     uncompress = uncompress || false;
 
-    server = http.createServer(function (req, res) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+    server = https.createServer(options, function (req, res) {
         var data = '';
 
         var pipe;
@@ -39,7 +49,9 @@ exports.start = function (port, address, callback, responseCode, uncompress) {
 };
 
 exports.startWithError = function(port, address, callback) {
-    server = http.createServer(function (req, res) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+    server = https.createServer(options, function (req, res) {
         var data = '';
         req.on('data', function (chunk) {
             data += chunk.toString();
