@@ -36,8 +36,11 @@ var Statful = require('statful-client');
 
 // Creates an object with the configuration and pass it to the client
 var config = {
-    token: 'MyAppToken',
     app: 'AccountService',
+    transport: 'api',
+    api: {
+        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+    },
     tags: { cluster: 'production' }
 };
 var statful = new Statful(config);
@@ -60,10 +63,10 @@ Creates a simple UDP configuration for the client.
 var Statful = require('statful-client');
 
 var config = {
-    app: 'AccountService'
+    app: 'AccountService',
     transport: 'udp',
     host: 'statful-relay.yourcompany.com',
-    tags: { cluster: 'production' },
+    tags: { cluster: 'production' }
 };
 
 var statful = new Statful(config);
@@ -77,12 +80,12 @@ Creates a simple HTTP API configuration for the client.
 var Statful = require('statful-client');
 
 var config = {
-    app: 'AccountService'
+    app: 'AccountService',
     transport: 'api',
     api: {
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
-    }
-    tags: { cluster: 'production' },
+    },
+    tags: { cluster: 'production' }
 };
 
 var statful = new Statful(config);
@@ -97,12 +100,12 @@ var Statful = require('statful-client');
 var logger = require('your-favourite-logging-lib');
 
 var config = {
-    app: 'AccountService'
+    app: 'AccountService',
     transport: 'api',
     api: {
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
     },
-    tags: { cluster: 'production' },
+    tags: { cluster: 'production' }
 };
 
 var statful = new Statful(config, logger);
@@ -149,7 +152,7 @@ var config = {
     api: {
         timeout: 300,
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
-    }
+    },
     namespace: 'application',
     tags: { cluster: 'production' }
 }
@@ -165,10 +168,10 @@ Creates a simple client configuration and use it to send some metrics.
 var Statful = require('statful-client');
 
 var config = {
-    app: 'AccountService'
+    app: 'AccountService',
     transport: 'udp',
     host: 'statful-relay.yourcompany.com',
-    tags: { cluster: 'production' },
+    tags: { cluster: 'production' }
 };
 
 var statful = new Statful(config);
@@ -210,20 +213,32 @@ The custom options that can be set on config param are detailed below.
 ### Methods
 
 ```javascript
+// Non Aggregated Metrics
 - staful.counter('myCounter', 1, {agg: ['sum']});
 - staful.gauge('myGauge', 10, { tags: { host: 'localhost' } });
 - staful.timer('myCounter', 200, {namespace: 'sandbox'});
+- staful.put('myCustomMetric', 200, {timestamp: '1471519331'});
+
+// Aggregated Metrics
+- staful.aggregatedCounter('myCounter', 1, 'avg', 60, {agg: ['sum']});
+- staful.aggregatedGauge('myGauge', 10, 'avg', 60, { tags: { host: 'localhost' } });
+- staful.aggregatedTimer('myCounter', 200, 'avg', 60, {namespace: 'sandbox'});
+- staful.aggregatedPut('myCustomMetric', 200, 'avg', 60, {timestamp: '1471519331'});
 ```
-These methods receive a metric name and a metric value as arguments and send a counter/gauge/timer metric. If the options parameter is omitted, the default values are used.
+The methods for non aggregated metrics receive a metric name and a metric value as arguments and send a counter/gauge/timer/custom metric. 
+The methods for aggregated metrics receive a metric name, a metric value, an aggregation and an aggregation frequency (used previously to aggregate the metric) as arguments and send a counter/gauge/timer/custom metric.  
+If the options parameter is omitted, the default values are used.
 Read the methods options reference bellow to get more information about the default values.
 
-| Option | Description | Type | Default for Counter | Default for Gauge | Default for Timer |
+> **IMPORTANT:** You can only send aggregated metrics with `api` transport type. Otherwise metrics will be discarded and not be sent.
+
+| Option | Description | Type | Default for Counter | Default for Gauge | Default for Timer | Default for Put | Available for Aggregated Methods |
 |:---|:---|:---|:---|:---|:---|
-| _agg_ | Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, min, max` | `array` | `['avg', 'p90']` | `[last]` | `['avg', 'p90', 'count']` |
-| _aggFreq_ | Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `number` | `10` | `10` | `10` |
-| _namespace_ | Defines the namespace of the metric. It overrides the global namespace configuration. | `string` | `application` | `application` | `application` |
-| _tags_ | Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `object` | `{}` | `{}` | `{ unit: 'ms' }` |
-| _timestamp_ | Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**. | `string` | `current timestamp` | `current timestamp` | `current timestamp` |
+| _agg_ | Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, min, max` | `array` | `['avg', 'p90']` | `[last]` | `['avg', 'p90', 'count']` | `[]` | **NO** |
+| _aggFreq_ | Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `number` | `10` | `10` | `10` | `10`' | **NO** |
+| _namespace_ | Defines the namespace of the metric. It overrides the global namespace configuration. | `string` | `application` | `application` | `application` | `application` | **YES** |
+| _tags_ | Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `object` | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
+| _timestamp_ | Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**. | `string` | `current timestamp` | `current timestamp` | `current timestamp` | `current timestamp` | **YES** |
 
 ## Authors
 
