@@ -498,10 +498,8 @@ describe('When sending metrics', function () {
         expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
     });
 
-    /*it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
+    it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
         // Given
-        httpsServer.start(httpPort, '127.0.0.1', {});
-
         var victim = new Client({
             systemStats: false,
             transport: 'http',
@@ -517,12 +515,12 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
         // Then
-        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+         expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+         expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+$/);
+         victim.logger.debug.restore();
+         done();
 
-        httpsServer.stop();
-        victim.logger.debug.restore();
-        done();
-    });*/
+    });
 
     it('should send uncompressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
         // Given
