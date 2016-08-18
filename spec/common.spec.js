@@ -234,6 +234,7 @@ describe('When sending metrics', function () {
 
     it('should send metrics with sample rate', function (done) {
         // Given
+        var randomStub = sinon.stub(Math, 'random').returns(0.1);
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         var victim = new Client({
@@ -250,7 +251,7 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             udpServer.stop();
-
+            randomStub.restore();
             expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 80$/);
             done();
         }
