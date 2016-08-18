@@ -5,13 +5,19 @@
 var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
+var httpsServer = require('./tools/https-server');
 var logger = require('bunyan').createLogger({name: 'tests'});
 
 var expect = require('chai').expect;
 
 describe('When sending gauge metrics', function () {
-
+    var httpPort = Math.floor(Math.random() * 20000) + 10001;
     var udpPort = Math.floor(Math.random() * 10000) + 1000;
+    var apiConf = {
+        host: '127.0.0.1',
+        port: httpPort,
+        token: 'my-token'
+    };
 
     var victim = new Client({
         systemStats: false,
@@ -268,6 +274,31 @@ describe('When sending gauge metrics', function () {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.gauge.my_metric 1 \d+ last,10$/);
+            done();
+        }
+    });
+
+    it('should send aggregated gauge', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            compression: true,
+            flushSize: 2
+        }, logger);
+
+        // When
+        victim.aggregatedGauge('my_metric1', 1, 'avg', 60);
+        victim.aggregatedGauge('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.gauge\.my_metric1 1 \d+\napplication\.gauge\.my_metric2 1 \d+$/);
             done();
         }
     });

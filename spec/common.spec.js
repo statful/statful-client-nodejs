@@ -11,16 +11,14 @@ var logger = require('bunyan').createLogger({name: 'tests'});
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-var udpPort = Math.floor(Math.random() * 10000) + 1000;
-var httpPort = Math.floor(Math.random() * 20000) + 10001;
-
-var apiConf = {
-    host: '127.0.0.1',
-    port: httpPort,
-    token: 'my-token'
-};
-
 describe('When sending metrics', function () {
+    var httpPort = Math.floor(Math.random() * 20000) + 10001;
+    var udpPort = Math.floor(Math.random() * 10000) + 1000;
+    var apiConf = {
+        host: '127.0.0.1',
+        port: httpPort,
+        token: 'my-token'
+    };
 
     it('should send metrics through UDP', function (done) {
         // Given
@@ -498,7 +496,29 @@ describe('When sending metrics', function () {
         expect(Client.bind(Client, conf)).to.throw('Metric type configuration is invalid, please read the documentation');
     });
 
-    it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
+    it('should log metrics when dryRun is activated (non aggregated metrics)', function (done) {
+        // Given
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 1,
+            dryRun: true
+        }, logger);
+
+        sinon.spy(victim.logger, "debug");
+
+        // When
+        victim.put('my_metric', 1);
+
+        // Then
+        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+        victim.logger.debug.restore();
+        done();
+
+    });
+
+    it('should log metrics when dryRun is activated (aggregated)', function (done) {
         // Given
         var victim = new Client({
             systemStats: false,
@@ -511,14 +531,62 @@ describe('When sending metrics', function () {
         sinon.spy(victim.logger, "debug");
 
         // When
-        victim.put('my_metric', 1);
+
+        victim.aggregatedPut('my_metric', 1, 'avg', 60);
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
         // Then
+        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+        victim.logger.debug.restore();
+        done();
+
+    });
+
+    it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
+        // Given
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 3,
+            dryRun: true
+        }, logger);
+
+        sinon.spy(victim.logger, "debug");
+
+        // When
+        victim.put('my_metric', 1);
+        victim.aggregatedPut('my_metric', 1, 'avg', 60);
+        victim.aggregatedPut('my_metric', 1, 'max', 60);
+
+        // Then
          expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
-         expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+$/);
+         expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
          victim.logger.debug.restore();
          done();
+
+    });
+
+    it('should log an error when we trying to send aggregated metrics through udp', function (done) {
+        // Given
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1
+        }, logger);
+
+        sinon.spy(victim.logger, "debug");
+
+        // When
+
+        victim.aggregatedPut('my_metric', 1, 'avg', 60);
+
+        // Then
+        expect(victim.logger.debug.getCall(1).args[0]).to.be.equal('Can\'t flush aggregated metrics using udp transport.');
+        expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
+        victim.logger.debug.restore();
+        done();
 
     });
 
@@ -569,5 +637,79 @@ describe('When sending metrics', function () {
             expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
             done();
         }
+    });
+
+    it('should send aggregated metrics even with lower global sample rate defined', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 2,
+            sampleRate: 1
+        }, logger);
+
+        // When
+        victim.aggregatedPut('my_metric1', 1, 'avg', 60);
+        victim.aggregatedPut('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should not send metrics with invalid timestamp', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'http',
+            api: apiConf,
+            flushSize: 1
+        }, logger);
+
+        sinon.spy(victim.logger, "warn");
+
+        // When
+        victim.aggregatedPut('my_metric1', 1, 'avg', 60, {timestamp: 'sd'});
+        victim.aggregatedPut('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(victim.logger.warn.getCall(0).args[0]).to.be.equal('Metric not sent. Please review the following: aggregations, aggregation frequency, tags and timestamp.');
+            expect(lines.toString()).to.match(/^application\.my_metric2 1 \d+$/);
+            victim.logger.warn.restore();
+            done();
+        }
+    });
+
+    it('should not send metrics due to sample rate', function (done) {
+        // Given
+        var randomStub = sinon.stub(Math, 'random').returns(0.9);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            sampleRate: 80
+        }, logger);
+
+        // When
+        victim.put('my_metric', 1, {agg: ['avg'], aggFreq: 10}, false);
+
+        // Then
+        randomStub.restore();
+        expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
+        done();
     });
 });
