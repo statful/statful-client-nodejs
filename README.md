@@ -19,7 +19,7 @@ Staful client for NodeJS written in Javascript. This client is intended to gathe
 
 | Statful client Version | Tested NodeJS versions  |
 |:---|:---|
-| 4.0.0 | `0.10`, `0.12`, `4` and _Stable_ |
+| 4.x.x | `0.10`, `0.12`, `4` and `Stable` |
 
 ## Installation
 
@@ -78,7 +78,7 @@ var Statful = require('statful-client');
 
 var config = {
     app: 'AccountService'
-    transport: 'http',
+    transport: 'api',
     api: {
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
     }
@@ -90,7 +90,7 @@ var statful = new Statful(config);
 
 ### Logger configuration
 
-Creates a simple client configuration and adds your favourite logger to the client, like Bunyan or Winston.
+Creates a simple client configuration and adds your favourite logger to the client like Bunyan, Winston or any other you want. **Just assure that logger object supports, at least, warn, debug and error methods**.
 
 ```javascript
 var Statful = require('statful-client');
@@ -98,7 +98,7 @@ var logger = require('your-favourite-logging-lib');
 
 var config = {
     app: 'AccountService'
-    transport: 'http',
+    transport: 'api',
     api: {
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
     },
@@ -125,7 +125,7 @@ var config = {
     api: {
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
     },
-    transport: 'http'
+    transport: 'api'
 }
 
 var statful = new Statful(config);
@@ -145,9 +145,8 @@ var config = {
     dryRyn: true,
     flushInterval: 5000,
     flushSize: 50,
-    transport: 'http',
+    transport: 'api',
     api: {
-        secure: false,
         timeout: 300,
         token: 'YOUR_TOKEN_FOR_STATFUL_API'
     }
@@ -197,17 +196,16 @@ The custom options that can be set on config param are detailed below.
 | _default_ | Object to set methods options. | `object` | `{}` | **NO** |
 | _api_ | Defined API configurations. | `object` | **none** | **NO** |
 | _dryRun_ | Defines if metrics should be output to the logger instead of being send. | `boolean` | `false` | **NO** |
-| _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `10000` | **NO** |
-| _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `10` | **NO** |
+| _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `3000` | **NO** |
+| _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `1000` | **NO** |
 | _namespace_ | Defines the global namespace. | `string` | `application` | **NO** |
 | _sampleRate_ | Defines the rate sampling. **Should be a number between [1, 100]**. | `number` | `100` | **NO** |
 | _tags_ | Defines the global tags. | `object` | `{}` | **NO** |
-| _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, http` | `string` | **none** | **YES** |
+| _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
 | _host_ | Defines the host name to where the metrics should be sent. Can also be set inside _api_. | `string` | `127.0.0.1` | **NO** |
 | _port_ | Defines the port. Can also be set inside _api_. | `string` | `2013` | **NO** |
-| _secure_ | Enable or disable https protocol. Must be set inside _api_. | `boolean` | `true` | **NO** |
 | _token_ | Defines the token to be used.  Must be set inside _api_. | `string` | **none** | **NO** |
-| _timeout_ | Defines the timeout for the transport layers. Must be set inside _api_. | `number` | `2000` | **NO** |
+| _timeout_ | Defines the timeout for the transport layers in **miliseconds**. Must be set inside _api_. | `number` | `2000` | **NO** |
 
 ### Methods
 
@@ -225,6 +223,7 @@ Read the methods options reference bellow to get more information about the defa
 | _aggFreq_ | Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `number` | `10` | `10` | `10` |
 | _namespace_ | Defines the namespace of the metric. It overrides the global namespace configuration. | `string` | `application` | `application` | `application` |
 | _tags_ | Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `object` | `{}` | `{}` | `{ unit: 'ms' }` |
+| _timestamp_ | Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**. | `string` | `current timestamp` | `current timestamp` | `current timestamp` |
 
 ## Authors
 

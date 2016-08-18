@@ -284,7 +284,7 @@ describe('When sending counter metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             compression: true,
             flushSize: 2

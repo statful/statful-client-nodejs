@@ -73,7 +73,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 1
         }, logger);
@@ -96,7 +96,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             compression: true,
             flushSize: 1
@@ -120,7 +120,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 2
         }, logger);
@@ -289,7 +289,7 @@ describe('When sending metrics', function () {
     it('should throw exception when api token is not configured', function() {
         var conf = {
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: {
                 host: '127.0.0.1',
                 port: httpPort
@@ -306,7 +306,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 1
         }, logger);
@@ -501,7 +501,7 @@ describe('When sending metrics', function () {
         // Given
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 1,
             dryRun: true
@@ -523,7 +523,7 @@ describe('When sending metrics', function () {
         // Given
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 2,
             dryRun: true
@@ -547,7 +547,7 @@ describe('When sending metrics', function () {
         // Given
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 3,
             dryRun: true
@@ -597,7 +597,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 2
         }, logger);
@@ -621,7 +621,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             compression: true,
             flushSize: 2
@@ -646,7 +646,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 2,
             sampleRate: 1
@@ -671,7 +671,7 @@ describe('When sending metrics', function () {
 
         var victim = new Client({
             systemStats: false,
-            transport: 'http',
+            transport: 'api',
             api: apiConf,
             flushSize: 1
         }, logger);
