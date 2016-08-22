@@ -39,7 +39,7 @@ var config = {
     app: 'AccountService',
     transport: 'api',
     api: {
-        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+        token: 'STATFUL_API_TOKEN'
     },
     tags: { cluster: 'production' }
 };
@@ -83,7 +83,7 @@ var config = {
     app: 'AccountService',
     transport: 'api',
     api: {
-        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+        token: 'STATFUL_API_TOKEN'
     },
     tags: { cluster: 'production' }
 };
@@ -103,7 +103,7 @@ var config = {
     app: 'AccountService',
     transport: 'api',
     api: {
-        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+        token: 'STATFUL_API_TOKEN'
     },
     tags: { cluster: 'production' }
 };
@@ -126,7 +126,7 @@ var config = {
     },
     tags: { cluster: 'production' },
     api: {
-        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+        token: 'STATFUL_API_TOKEN'
     },
     transport: 'api'
 }
@@ -145,13 +145,13 @@ var config = {
     default: {
         timer: { tags: { cluster: 'qa' }, agg: ['count'], aggFreq: 180 }
     },
-    dryRyn: true,
+    dryRun: true,
     flushInterval: 5000,
     flushSize: 50,
     transport: 'api',
     api: {
         timeout: 300,
-        token: 'YOUR_TOKEN_FOR_STATFUL_API'
+        token: 'STATFUL_API_TOKEN'
     },
     namespace: 'application',
     tags: { cluster: 'production' }
@@ -182,7 +182,7 @@ statful.timer('testTimer', 100);
 statful.counter('testCounter', 1, { agg: ['first'], aggFreq: 60, namespace: 'sandbox' });
 
 // Metric to be sent with tags
-statful.counter('testCounter', 1, {tags: {host, 'localhost', status: 'SUCCESS'}});
+statful.counter('testCounter', 1, {tags: {host: 'localhost', status: 'SUCCESS'}});
 ```
 
 ## Reference
@@ -227,7 +227,7 @@ The custom options that can be set on config param are detailed below.
 ```
 The methods for non aggregated metrics receive a metric name and a metric value as arguments and send a counter/gauge/timer/custom metric. 
 The methods for aggregated metrics receive a metric name, a metric value, an aggregation and an aggregation frequency (used previously to aggregate the metric) as arguments and send a counter/gauge/timer/custom metric.  
-If the options parameter is omitted, the default values are used.
+If the options parameter is omitted, the default values are used. Those methods are truly valuable due to need of ingest already aggregated metrics into Statful (for example from AWS CloudWatch). 
 Read the methods options reference bellow to get more information about the default values.
 
 > **IMPORTANT:** You can only send aggregated metrics with `api` transport type. Otherwise metrics will be discarded and not be sent.
