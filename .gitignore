@@ -8,3 +8,6 @@ coverage
 .vagrant
 *.rpm
 *.log
+
+# OSX
+.DS_Store

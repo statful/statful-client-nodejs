@@ -5,13 +5,19 @@
 var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
+var httpsServer = require('./tools/https-server');
 var logger = require('bunyan').createLogger({name: 'tests'});
 
 var expect = require('chai').expect;
 
 describe('When sending counter metrics', function () {
-
+    var httpPort = Math.floor(Math.random() * 20000) + 10001;
     var udpPort = Math.floor(Math.random() * 10000) + 1000;
+    var apiConf = {
+        host: '127.0.0.1',
+        port: httpPort,
+        token: 'my-token'
+    };
 
     var victim = new Client({
         systemStats: false,
@@ -73,13 +79,13 @@ describe('When sending counter metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.counter('my_metric', 1, {aggFreq: 100});
+        victim.counter('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,120$/);
             done();
         }
     });
@@ -180,7 +186,7 @@ describe('When sending counter metrics', function () {
             flushSize: 1,
             default: {
                 counter: {
-                    aggFreq: 100
+                    aggFreq: 120
                 }
             }
         }, logger);
@@ -192,7 +198,7 @@ describe('When sending counter metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,120$/);
             done();
         }
     });
@@ -208,19 +214,19 @@ describe('When sending counter metrics', function () {
             flushSize: 1,
             default: {
                 counter: {
-                    aggFreq: 99
+                    aggFreq: 60
                 }
             }
         }, logger);
 
         // When
-        victim.counter('my_metric', 1, {aggFreq: 100});
+        victim.counter('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,100$/);
+            expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,120$/);
             done();
         }
     });
@@ -268,6 +274,31 @@ describe('When sending counter metrics', function () {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.counter.my_metric 1 \d+ sum,count,10$/);
+            done();
+        }
+    });
+
+    it('should send aggregated counter', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'api',
+            api: apiConf,
+            compression: true,
+            flushSize: 2
+        }, logger);
+
+        // When
+        victim.aggregatedCounter('my_metric1', 1, 'avg', 60);
+        victim.aggregatedCounter('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.counter\.my_metric1 1 \d+\napplication\.counter\.my_metric2 1 \d+$/);
             done();
         }
     });

@@ -5,13 +5,19 @@
 var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
+var httpsServer = require('./tools/https-server');
 var logger = require('bunyan').createLogger({name: 'tests'});
 
 var expect = require('chai').expect;
 
 describe('When sending timer metrics', function () {
-
+    var httpPort = Math.floor(Math.random() * 20000) + 10001;
     var udpPort = Math.floor(Math.random() * 10000) + 1000;
+    var apiConf = {
+        host: '127.0.0.1',
+        port: httpPort,
+        token: 'my-token'
+    };
 
     var victim = new Client({
         systemStats: false,
@@ -25,7 +31,7 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.timer('my_metric', 1);
+        victim.timer('my_metric', 1, null, false);
 
         // Then
         function onResponse(lines) {
@@ -71,14 +77,15 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
+
         // When
-        victim.timer('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });
@@ -179,7 +186,7 @@ describe('When sending timer metrics', function () {
             flushSize: 1,
             default: {
                 timer: {
-                    aggFreq: 100
+                    aggFreq: 120
                 }
             }
         }, logger);
@@ -191,7 +198,7 @@ describe('When sending timer metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });
@@ -207,19 +214,19 @@ describe('When sending timer metrics', function () {
             flushSize: 1,
             default: {
                 timer: {
-                    aggFreq: 99
+                    aggFreq: 60
                 }
             }
         }, logger);
 
         // When
-        victim.timer('my_metric', 1, {aggFreq: 100});
+        victim.timer('my_metric', 1, {aggFreq: 120});
 
         // Then
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,100$/);
+            expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
             done();
         }
     });
@@ -267,6 +274,31 @@ describe('When sending timer metrics', function () {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,10$/);
+            done();
+        }
+    });
+
+    it('should send aggregated timer', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'api',
+            api: apiConf,
+            compression: true,
+            flushSize: 2
+        }, logger);
+
+        // When
+        victim.aggregatedTimer('my_metric1', 1, 'avg', 60);
+        victim.aggregatedTimer('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.timer\.my_metric1,unit=ms 1 \d+\napplication\.timer\.my_metric2,unit=ms 1 \d+$/);
             done();
         }
     });
