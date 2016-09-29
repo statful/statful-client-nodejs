@@ -498,8 +498,6 @@ describe('When sending metrics', function () {
     });
 
     it('should log metrics when dryRun is activated (non aggregated metrics)', function (done) {
-        var clock = sinon.useFakeTimers();
-
         // Given
         var victim = new Client({
             systemStats: false,
@@ -514,19 +512,14 @@ describe('When sending metrics', function () {
         // When
         victim.put('my_metric', 1);
 
-        clock.tick(1);
-
         // Then
         expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
         victim.logger.debug.restore();
-        clock.restore();
         done();
 
     });
 
     it('should log metrics when dryRun is activated (aggregated)', function (done) {
-        var clock = sinon.useFakeTimers();
-
         // Given
         var victim = new Client({
             systemStats: false,
@@ -543,19 +536,14 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
-        clock.tick(1);
-
         // Then
         expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
         victim.logger.debug.restore();
-        clock.restore();
         done();
 
     });
 
     it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
-        var clock = sinon.useFakeTimers();
-
         // Given
         var victim = new Client({
             systemStats: false,
@@ -572,20 +560,15 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
         victim.aggregatedPut('my_metric', 1, 'max', 60);
 
-        clock.tick(1);
-
         // Then
          expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
          expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
          victim.logger.debug.restore();
-         clock.restore();
          done();
 
     });
 
     it('should log an error when we trying to send aggregated metrics through udp', function (done) {
-        var clock = sinon.useFakeTimers();
-        
         // Given
         var victim = new Client({
             systemStats: false,
@@ -600,13 +583,10 @@ describe('When sending metrics', function () {
 
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
-        clock.tick(1);
-
         // Then
         expect(victim.logger.debug.getCall(1).args[0]).to.be.equal('Can\'t flush aggregated metrics using udp transport.');
         expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
         victim.logger.debug.restore();
-        clock.restore();
         done();
 
     });
