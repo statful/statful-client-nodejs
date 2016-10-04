@@ -12,13 +12,19 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 
 describe('When sending metrics', function () {
-    var httpPort = Math.floor(Math.random() * 20000) + 10001;
-    var udpPort = Math.floor(Math.random() * 10000) + 1000;
-    var apiConf = {
-        host: '127.0.0.1',
-        port: httpPort,
-        token: 'my-token'
-    };
+    var httpPort;
+    var udpPort;
+    var apiConf;
+
+    beforeEach(function(){
+        httpPort = Math.floor(Math.random() * 20000) + 10001;
+        udpPort = Math.floor(Math.random() * 10000) + 1000;
+        apiConf = {
+            host: '127.0.0.1',
+            port: httpPort,
+            token: 'my-token'
+        };
+    });
 
     it('should send metrics through UDP', function (done) {
         // Given
@@ -645,8 +651,6 @@ describe('When sending metrics', function () {
     });
 
     it('should send compressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
-        this.timeout(15000);
-        
         // Given
         httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
 
@@ -671,7 +675,7 @@ describe('When sending metrics', function () {
         }
     });
 
-    it('should send aggregated metrics even with lower global sample rate defined', function (done) {
+    it('should send uncompressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
         // Given
         httpsServer.start(httpPort, '127.0.0.1', onResponse);
 
@@ -679,8 +683,7 @@ describe('When sending metrics', function () {
             systemStats: false,
             transport: 'api',
             api: apiConf,
-            flushSize: 2,
-            sampleRate: 1
+            flushSize: 2
         }, logger);
 
         // When
@@ -689,6 +692,33 @@ describe('When sending metrics', function () {
 
         // Then
         function onResponse(lines) {
+            httpsServer.stop();
+
+            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+            done();
+        }
+    });
+
+    it('should send aggregated metrics even with lower global sample rate defined', function (done) {
+        // Given
+        var randomStub = sinon.stub(Math, 'random').returns(0.01);
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'api',
+            api: apiConf,
+            flushSize: 2,
+            sampleRate: 10
+        }, logger);
+
+        // When
+        victim.aggregatedPut('my_metric1', 1, 'avg', 60);
+        victim.aggregatedPut('my_metric2', 1, 'avg', 60);
+
+        // Then
+        function onResponse(lines) {
+            randomStub.restore();
             httpsServer.stop();
 
             expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
