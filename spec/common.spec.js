@@ -645,8 +645,6 @@ describe('When sending metrics', function () {
     });
 
     it('should send compressed aggregated metrics of same agg and aggFreq through HTTPS', function (done) {
-        this.timeout(15000);
-        
         // Given
         httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
 
