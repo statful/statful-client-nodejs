@@ -286,6 +286,35 @@ describe('When sending metrics', function () {
         }
     });
 
+    it('should send metrics with sampled rate overriding global configuration', function (done) {
+        // Given
+        var randomStub = sinon.stub(Math, 'random').returns(1);
+
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 2,
+            sampleRate: 1
+        }, logger);
+
+        // When
+        victim.put('my_metric', 1, {agg: ['avg'], aggFreq: 10, sampleRate: 100}, false);
+        victim.put('my_metric', 2, {agg: ['avg'], aggFreq: 10, sampleRate: 100}, false);
+
+        // Then
+        function onResponse(lines) {
+            udpServer.stop();
+            randomStub.restore();
+
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+ avg,10\napplication\.my_metric 2 \d+ avg,10$/);
+
+            done();
+        }
+    });
+
     it('should throw exception when api token is not configured', function() {
         var conf = {
             systemStats: false,
