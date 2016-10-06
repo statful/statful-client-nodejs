@@ -39,7 +39,7 @@ module.exports = function (grunt) {
                         lines: 93,
                         statements:93,
                         branches: 83,
-                        functions: 94
+                        functions: 93
                     },
                     root: './lib',
                     reportFormats: ['lcov']

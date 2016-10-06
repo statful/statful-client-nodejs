@@ -21,7 +21,6 @@
   "dependencies": {
     "blocked": "^1.1.0",
     "merge": "^1.2.0",
-    "request": "^2.63.0",
     "unique-concat": "^0.2.2"
   },
   "devDependencies": {
