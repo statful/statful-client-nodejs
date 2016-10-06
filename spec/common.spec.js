@@ -6,28 +6,7 @@ var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
 var httpsServer = require('./tools/https-server');
-//var logger = require('bunyan').createLogger({name: 'tests'});
-
-var logger = (function () {
-    var self = {};
-    return {
-        debug: function (msg) {
-            self.log = msg;
-        },
-
-        info: function (msg) {
-            self.log = msg;
-        },
-
-        warn: function (msg) {
-            self.log = msg;
-        },
-
-        getLastLog: function() {
-           return self.log;
-        }
-    };
-})();
+var logger = require('bunyan').createLogger({name: 'tests'});
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
