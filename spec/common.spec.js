@@ -6,7 +6,28 @@ var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
 var httpsServer = require('./tools/https-server');
-var logger = require('bunyan').createLogger({name: 'tests'});
+//var logger = require('bunyan').createLogger({name: 'tests'});
+
+var logger = (function () {
+    var self = {};
+    return {
+        debug: function (msg) {
+            self.log = msg;
+        },
+
+        info: function (msg) {
+            self.log = msg;
+        },
+
+        warn: function (msg) {
+            self.log = msg;
+        },
+
+        getLastLog: function() {
+           return self.log;
+        }
+    };
+})();
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
@@ -548,9 +569,11 @@ describe('When sending metrics', function () {
         victim.put('my_metric', 1);
 
         // Then
-        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
-        victim.logger.debug.restore();
-        done();
+        setTimeout(function () {
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+            victim.logger.debug.restore();
+            done();
+        });
 
     });
 
@@ -572,9 +595,11 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
         // Then
-        expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
-        victim.logger.debug.restore();
-        done();
+        setTimeout(function () {
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            victim.logger.debug.restore();
+            done();
+        });
 
     });
 
@@ -596,11 +621,12 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'max', 60);
 
         // Then
-         expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
-         expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
-         victim.logger.debug.restore();
-         done();
-
+        setTimeout(function () {
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            victim.logger.debug.restore();
+            done();
+        });
     });
 
     it('should log an error when we trying to send aggregated metrics through udp', function (done) {
@@ -619,10 +645,11 @@ describe('When sending metrics', function () {
         victim.aggregatedPut('my_metric', 1, 'avg', 60);
 
         // Then
-        expect(victim.logger.debug.getCall(1).args[0]).to.be.equal('Can\'t flush aggregated metrics using udp transport.');
-        expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
-        victim.logger.debug.restore();
-        done();
+        setTimeout(function () {
+            expect(victim.logger.debug.getCall(1).args[0]).to.be.equal('Can\'t flush aggregated metrics using udp transport.');
+            expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
+            done();
+        });
 
     });
 
