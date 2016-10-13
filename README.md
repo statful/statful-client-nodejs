@@ -220,7 +220,7 @@ The custom options that can be set on config param are detailed below.
 - staful.put('myCustomMetric', 200, {timestamp: '1471519331'});
 
 // Aggregated Metrics
-- staful.aggregatedCounter('myCounter', 1, 'avg', 60, {agg: ['sum']});
+- staful.aggregatedCounter('myCounter', 1, 'avg', 60, { tags: { host: 'localhost' } });
 - staful.aggregatedGauge('myGauge', 10, 'avg', 60, { tags: { host: 'localhost' } });
 - staful.aggregatedTimer('myCounter', 200, 'avg', 60, {namespace: 'sandbox'});
 - staful.aggregatedPut('myCustomMetric', 200, 'avg', 60, {timestamp: '1471519331'});

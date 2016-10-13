@@ -17,8 +17,8 @@ describe('When sending metrics', function () {
     var apiConf;
 
     beforeEach(function(){
-        httpPort = Math.floor(Math.random() * 20000) + 10001;
-        udpPort = Math.floor(Math.random() * 10000) + 1000;
+        httpPort = Math.floor(Math.random() * 10000) + 11025;
+        udpPort = Math.floor(Math.random() * 10000) + 1024;
         apiConf = {
             host: '127.0.0.1',
             port: httpPort,
