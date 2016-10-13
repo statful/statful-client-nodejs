@@ -11,8 +11,8 @@ var logger = require('bunyan').createLogger({name: 'tests'});
 var expect = require('chai').expect;
 
 describe('When sending gauge metrics', function () {
-    var httpPort = Math.floor(Math.random() * 20000) + 10001;
-    var udpPort = Math.floor(Math.random() * 10000) + 1000;
+    var httpPort = Math.floor(Math.random() * 10000) + 11025;
+    var udpPort = Math.floor(Math.random() * 10000) + 1024;
     var apiConf = {
         host: '127.0.0.1',
         port: httpPort,

@@ -6,7 +6,7 @@ var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
 var httpsServer = require('./tools/https-server');
-var logger = require('bunyan').createLogger({name: 'tests'});
+var logger = require('bunyan').createLogger({name: 'tests', level: 50});
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
@@ -17,8 +17,8 @@ describe('When sending metrics', function () {
     var apiConf;
 
     beforeEach(function(){
-        httpPort = Math.floor(Math.random() * 20000) + 10001;
-        udpPort = Math.floor(Math.random() * 10000) + 1000;
+        httpPort = Math.floor(Math.random() * 10000) + 11025;
+        udpPort = Math.floor(Math.random() * 10000) + 1024;
         apiConf = {
             host: '127.0.0.1',
             port: httpPort,
