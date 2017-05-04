@@ -535,7 +535,7 @@ describe('When sending metrics', function () {
     it('should log metrics when dryRun is activated (non aggregated metrics)', function (done) {
         // Given
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             flushSize: 1,
@@ -550,6 +550,7 @@ describe('When sending metrics', function () {
         // Then
         setTimeout(function () {
             expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.buffer.flush_length,buffer_type=non-aggregated 1 \d+ avg,10$/);
             victim.logger.debug.restore();
             done();
         });
@@ -559,7 +560,7 @@ describe('When sending metrics', function () {
     it('should log metrics when dryRun is activated (aggregated)', function (done) {
         // Given
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             flushSize: 2,
@@ -576,6 +577,7 @@ describe('When sending metrics', function () {
         // Then
         setTimeout(function () {
             expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.buffer.flush_length,buffer_type=aggregated 2 \d+ avg,10$/);
             victim.logger.debug.restore();
             done();
         });
@@ -585,7 +587,7 @@ describe('When sending metrics', function () {
     it('should log metrics when dryRun is activated (aggregated and non aggregated metrics)', function (done) {
         // Given
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             flushSize: 3,
@@ -603,6 +605,7 @@ describe('When sending metrics', function () {
         setTimeout(function () {
             expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
             expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(2).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.buffer.flush_length,buffer_type=aggregated 2 \d+ avg,10\napplication.buffer.flush_length,buffer_type=non-aggregated 1 \d+ avg,10$/);
             victim.logger.debug.restore();
             done();
         });
@@ -637,11 +640,13 @@ describe('When sending metrics', function () {
         httpsServer.start(httpPort, '127.0.0.1', onResponse);
 
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             flushSize: 2
         }, logger);
+
+        var counter = 0;
 
         // When
         victim.aggregatedPut('my_metric1', 1, 'avg', 60);
@@ -650,9 +655,13 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             httpsServer.stop();
-
-            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
-            done();
+            if (counter === 0) {
+                expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+                counter ++;
+            } else {
+                expect(lines.toString()).to.match(/^application.buffer.flush_length,buffer_type=aggregated 2 \d+ avg,10$/);
+                done();
+            }
         }
     });
 
@@ -661,12 +670,14 @@ describe('When sending metrics', function () {
         httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
 
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             compression: true,
             flushSize: 2
         }, logger);
+
+        var counter = 0;
 
         // When
         victim.aggregatedPut('my_metric1', 1, 'avg', 60);
@@ -675,9 +686,14 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             httpsServer.stop();
+            if (counter === 0) {
+                expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+                counter++;
+            } else {
+                expect(lines.toString()).to.match(/^application.buffer.flush_length,buffer_type=aggregated 2 \d+ avg,10$/);
+                done();
+            }
 
-            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
-            done();
         }
     });
 
@@ -686,11 +702,13 @@ describe('When sending metrics', function () {
         httpsServer.start(httpPort, '127.0.0.1', onResponse);
 
         var victim = new Client({
-            systemStats: false,
+            systemStats: true,
             transport: 'api',
             api: apiConf,
             flushSize: 2
         }, logger);
+
+        var counter = 0;
 
         // When
         victim.aggregatedPut('my_metric1', 1, 'avg', 60);
@@ -699,9 +717,13 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             httpsServer.stop();
-
-            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
-            done();
+            if (counter === 0) {
+                expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+                counter++;
+            } else {
+                expect(lines.toString()).to.match(/^application.buffer.flush_length,buffer_type=aggregated 2 \d+ avg,10$/);
+                done();
+            }
         }
     });
 
