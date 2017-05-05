@@ -627,6 +627,7 @@ describe('When sending metrics', function () {
         setTimeout(function () {
             expect(victim.logger.debug.getCall(1).args[0]).to.be.equal('Can\'t flush aggregated metrics using udp transport.');
             expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
+            victim.logger.debug.restore();
             done();
         });
 
@@ -743,7 +744,7 @@ describe('When sending metrics', function () {
             flushSize: 1
         }, logger);
 
-        sinon.spy(victim.logger, "warn");
+        sinon.spy(victim.logger, "debug");
 
         // When
         victim.aggregatedPut('my_metric1', 1, 'avg', 60, {timestamp: 'sd'});
@@ -753,9 +754,9 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             httpsServer.stop();
 
-            expect(victim.logger.warn.getCall(0).args[0]).to.be.equal('Metric not sent. Please review the following: aggregations, aggregation frequency, tags and timestamp.');
+            expect(victim.logger.debug.getCall(0).args[0]).to.be.equal('Metric not sent. Please review the following: aggregations, aggregation frequency, tags and timestamp.');
             expect(lines.toString()).to.match(/^application\.my_metric2 1 \d+$/);
-            victim.logger.warn.restore();
+            victim.logger.debug.restore();
             done();
         }
     });
