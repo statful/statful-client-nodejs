@@ -367,10 +367,22 @@ describe('When sending metrics', function () {
         victim.close();
 
         // Then
-
         expect(victim.close.calledOnce).to.be.true;
         victim.close.restore();
 
+    });
+
+    it('should flush client', function () {
+        var victim = new Client({}, logger);
+
+        sinon.spy(victim, "flush");
+
+        // When
+        victim.flush();
+
+        // Then
+        expect(victim.flush.calledOnce).to.be.true;
+        victim.flush.restore();
     });
 
     it('should configure global namespace', function (done) {
