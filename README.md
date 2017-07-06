@@ -206,6 +206,7 @@ The custom options that can be set on config param are detailed below.
 | _tags_ | Defines the global tags. | `object` | `{}` | **NO** |
 | _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
 | _host_ | Defines the host name to where the metrics should be sent. Can also be set inside _api_. | `string` | `127.0.0.1` | **NO** |
+| _path_ | Defines the api path to where the metrics should be sent. Can also be set inside _api_. | `string` | `/tel/v2.0/metric` | **NO** |
 | _port_ | Defines the port. Can also be set inside _api_. | `string` | `2013` | **NO** |
 | _token_ | Defines the token to be used.  Must be set inside _api_. | `string` | **none** | **NO** |
 | _timeout_ | Defines the timeout for the transport layers in **miliseconds**. Must be set inside _api_. | `number` | `2000` | **NO** |
@@ -225,9 +226,9 @@ The custom options that can be set on config param are detailed below.
 - staful.aggregatedTimer('myCounter', 200, 'avg', 60, {namespace: 'sandbox'});
 - staful.aggregatedPut('myCustomMetric', 200, 'avg', 60, {timestamp: '1471519331'});
 ```
-The methods for non aggregated metrics receive a metric name and a metric value as arguments and send a counter/gauge/timer/custom metric. 
-The methods for aggregated metrics receive a metric name, a metric value, an aggregation and an aggregation frequency (used previously to aggregate the metric) as arguments and send a counter/gauge/timer/custom metric.  
-If the options parameter is omitted, the default values are used. Those methods are truly valuable due to need of ingest already aggregated metrics into Statful (for example from AWS CloudWatch). 
+The methods for non aggregated metrics receive a metric name and a metric value as arguments and send a counter/gauge/timer/custom metric.
+The methods for aggregated metrics receive a metric name, a metric value, an aggregation and an aggregation frequency (used previously to aggregate the metric) as arguments and send a counter/gauge/timer/custom metric.
+If the options parameter is omitted, the default values are used. Those methods are truly valuable due to need of ingest already aggregated metrics into Statful (for example from AWS CloudWatch).
 Read the methods options reference bellow to get more information about the default values.
 
 > **IMPORTANT:** You can only send aggregated metrics with `api` transport type. Otherwise metrics will be discarded and not be sent.
