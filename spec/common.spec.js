@@ -44,7 +44,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -68,7 +68,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
+            expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
             done();
         }
     });
@@ -91,7 +91,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             httpsServer.stop();
 
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -115,7 +115,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             httpsServer.stop();
 
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -139,7 +139,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             httpsServer.stop();
 
-            expect(lines).to.match(/^application.my_metric1 1 \d+\napplication.my_metric2 1 \d+$/);
+            expect(lines).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
             done();
         }
     });
@@ -162,7 +162,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -185,7 +185,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^my_namespace.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^my_namespace\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -258,7 +258,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
             randomStub.restore();
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+ avg,10 80$/);
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+ avg,10 80$/);
             done();
         }
     });
@@ -353,7 +353,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             httpsServer.stop();
 
-            expect(lines).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -404,7 +404,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^my_namespace.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^my_namespace\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -428,7 +428,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^my_other_namespace.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^my_other_namespace\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -475,7 +475,7 @@ describe('When sending metrics', function () {
         function onResponse(lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            expect(lines.toString()).to.match(/^application\.my_metric 1 \d+$/);
             done();
         }
     });
@@ -561,7 +561,7 @@ describe('When sending metrics', function () {
 
         // Then
         setTimeout(function () {
-            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application\.my_metric 1 \d+$/);
             victim.logger.debug.restore();
             done();
         });
@@ -587,7 +587,7 @@ describe('When sending metrics', function () {
 
         // Then
         setTimeout(function () {
-            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(aggregated\): application\.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
             victim.logger.debug.restore();
             done();
         });
@@ -613,8 +613,8 @@ describe('When sending metrics', function () {
 
         // Then
         setTimeout(function () {
-            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application.my_metric 1 \d+$/);
-            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(/^Flushing metrics \(non aggregated\): application\.my_metric 1 \d+$/);
+            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(aggregated\): application\.my_metric 1 \d+\napplication\.my_metric 1 \d+$/);
             victim.logger.debug.restore();
             done();
         });
@@ -663,7 +663,6 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             httpsServer.stop();
-
             expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
             done();
         }
@@ -690,6 +689,7 @@ describe('When sending metrics', function () {
             httpsServer.stop();
 
             expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
+
             done();
         }
     });
@@ -712,7 +712,6 @@ describe('When sending metrics', function () {
         // Then
         function onResponse(lines) {
             httpsServer.stop();
-
             expect(lines.toString()).to.match(/^application\.my_metric1 1 \d+\napplication\.my_metric2 1 \d+$/);
             done();
         }
@@ -793,4 +792,90 @@ describe('When sending metrics', function () {
         expect(victim.aggregatedBuffer.bufferSize).to.be.equal(0);
         done();
     });
+
+    it('should send system stats metrics through UDP', function (done) {
+        // Given
+        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
+
+        var victim = new Client({
+            systemStats: true,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1,
+            flushInterval: 10000
+        }, logger);
+
+        // When
+        victim.put('my_metric', 1, null, false);
+
+        // Then
+        function onResponse(lines) {
+            //expect my_metric
+            if (lines.toString().indexOf("\n") === -1) {
+                expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
+            } else {
+                //expect systemStats after that
+                expect(lines.toString()).to.match(/^application\.buffer\.flush_length,buffer_type=non_aggregated 1 \d+$/);
+                udpServer.stop();
+            }
+
+            done();
+        }
+    });
+
+
+    it('should log metrics when dryRun is activated (systemStats)', function (done) {
+        // Given
+        var victim = new Client({
+            systemStats: true,
+            transport: 'api',
+            api: apiConf,
+            flushSize: 1,
+            dryRun: true
+        }, logger);
+
+        sinon.spy(victim.logger, "debug");
+
+        // When
+        victim.put('my_metric', 1);
+
+        // Then
+        setTimeout(function () {
+            expect(victim.logger.debug.getCall(1).args[0]).to.match(/^Flushing metrics \(system stats\): application\.buffer\.flush_length,buffer_type=non-aggregated 1 \d+ avg,sum,10\napplication\.buffer\.flush_length,buffer_type=system-stats 1 \d+ avg,sum,10/);
+
+            victim.logger.debug.restore();
+            done();
+        });
+
+    });
+
+    it('should send system stats metrics through HTTPS', function (done) {
+        // Given
+        httpsServer.start(httpPort, '127.0.0.1', onResponse);
+
+        var victim = new Client({
+            systemStats: true,
+            transport: 'api',
+            api: apiConf,
+            flushSize: 1
+        }, logger);
+
+        // When
+        victim.put('my_metric', 1);
+
+        // Then
+        function onResponse(lines) {
+
+            if (lines.toString().indexOf("\n") === -1) {
+                expect(lines).to.match(/^application\.my_metric 1 \d+$/);
+
+            } else {
+                expect(lines).to.match(/^Flushing metrics \(system stats\): application\.buffer\.flush_length,buffer_type=aggregated 1 \d+ avg,10\napplication\.buffer\.flush_length,buffer_type=system-stats 1 \d+ avg,10/);
+                httpsServer.stop();
+            }
+
+            done();
+        }
+    });
+
 });
