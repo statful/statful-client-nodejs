@@ -10,37 +10,27 @@
     "type": "git",
     "url": "https://github.com/statful/statful-client-nodejs.git"
   },
-  "version": "4.3.2",
+  "version": "4.3.3",
   "engines": {
-    "node": ">=0.8"
+    "node": ">=0.12"
   },
   "main": "statful.js",
   "scripts": {
-    "test": "grunt test"
+    "eslint": "./node_modules/.bin/eslint lib",
+    "cover": "istanbul cover _mocha spec/*.js",
+    "test": "npm run eslint && npm run cover"
   },
   "dependencies": {
-    "blocked": "^1.1.0",
+    "blocked": "^1.2.1",
     "merge": "^1.2.0",
     "unique-concat": "^0.2.2"
   },
   "devDependencies": {
-    "bunyan": "^1.8.1",
-    "chai": "^3.5.0",
-    "grunt": "^0.4.5",
-    "grunt-bump": "^0.3.0",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-nodeunit": "^0.4.1",
-    "grunt-mocha": "^0.4.13",
-    "grunt-mocha-cli": "^1.11.0",
-    "grunt-mocha-istanbul": "^5.0.1",
-    "grunt-mocha-test": "^0.12.7",
-    "http": "0.0.0",
-    "istanbul": "^0.4.4",
-    "jshint-stylish": "^2.2.0",
-    "load-grunt-tasks": "^3.1.0",
-    "mocha": "2.5.3",
-    "sinon": "^1.17.4",
-    "time-grunt": "^1.1.0"
+    "bunyan": "^1.8.12",
+    "chai": "^4.1.1",
+    "eslint": "^4.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "3.5.0",
+    "sinon": "^3.2.1"
   }
 }

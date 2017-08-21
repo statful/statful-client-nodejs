@@ -1,14 +1,13 @@
 language: node_js
 node_js:
-  - "0.10"
   - "0.12"
-  - "4"
-  - "stable"
+  - "5.12.0"
+  - "6.9.2"
+  - "7.10.1"
+  - "8.2.0"
 before_install:
   - npm install -g grunt-cli
 install:
   - npm install
 before_script:
-  - grunt
-notifications:
-  email: false
+  - npm run test
