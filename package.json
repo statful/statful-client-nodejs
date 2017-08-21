@@ -1,14 +1,11 @@
 {
-  "name": "statful-client",
+  "name": "@statful/statful-client",
   "description": "NodeJS Client for the Statful",
-  "author": {
-    "name": "Jose Fonseca",
-    "email": "jose.fonseca@mindera.com"
-  },
+  "author": "Jose Fonseca <jose.fonseca@mindera.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/statful/statful-client-nodejs.git"
+    "url": "git+https://github.com/statful/statful-client-nodejs.git"
   },
   "version": "4.3.3",
   "engines": {
@@ -16,7 +13,7 @@
   },
   "main": "statful.js",
   "scripts": {
-    "eslint": "./node_modules/.bin/eslint lib",
+    "eslint": "eslint lib",
     "cover": "istanbul cover _mocha spec/*.js",
     "test": "npm run eslint && npm run cover"
   },
@@ -32,5 +29,12 @@
     "istanbul": "^0.4.5",
     "mocha": "3.5.0",
     "sinon": "^3.2.1"
+  },
+  "bugs": {
+    "url": "https://github.com/statful/statful-client-nodejs/issues"
+  },
+  "homepage": "https://github.com/statful/statful-client-nodejs#readme",
+  "directories": {
+    "lib": "lib"
   }
 }
