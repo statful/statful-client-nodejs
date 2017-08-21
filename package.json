@@ -1,5 +1,5 @@
 {
-  "name": "statful-client",
+  "name": "@statful/statful-client",
   "description": "NodeJS Client for the Statful",
   "author": "Jose Fonseca <jose.fonseca@mindera.com>",
   "license": "MIT",
