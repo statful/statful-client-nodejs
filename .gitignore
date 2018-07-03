@@ -11,3 +11,5 @@ coverage
 
 # OSX
 .DS_Store
+
+.history
