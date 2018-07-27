@@ -199,6 +199,7 @@ The custom options that can be set on config param are detailed below.
 | _default_ | Object to set methods options. | `object` | `{}` | **NO** |
 | _api_ | Defined API configurations. | `object` | **none** | **NO** |
 | _dryRun_ | Defines if metrics should be output to the logger instead of being send. | `boolean` | `false` | **NO** |
+| _disableSendFlushStats_ | Disables sending metrics with flush stats. | `boolean` | `false` | **NO** |
 | _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `3000` | **NO** |
 | _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `1000` | **NO** |
 | _namespace_ | Defines the global namespace. | `string` | `application` | **NO** |
