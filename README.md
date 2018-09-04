@@ -20,7 +20,7 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 | Statful client Version | Tested NodeJS versions  |
 |:---|:---|
 | 4.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0`  |
-| 5.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0`  |
+| 5.x.x | `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0`  |
 
 ## Installation
 
