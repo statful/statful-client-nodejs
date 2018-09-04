@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/statful/statful-client-nodejs.git"
   },
-  "version": "4.3.4",
+  "version": "5.0.0",
   "engines": {
     "node": ">=4.4.0"
   },
@@ -24,11 +24,11 @@
   },
   "devDependencies": {
     "bunyan": "^1.8.12",
-    "chai": "^4.1.1",
-    "eslint": "^4.5.0",
-    "istanbul": "^0.4.5",
-    "mocha": "3.5.0",
-    "sinon": "^3.2.1"
+    "chai": "4.1.2",
+    "eslint": "5.5.0",
+    "istanbul": "0.4.5",
+    "mocha": "3.5.3",
+    "sinon": "6.1.5"
   },
   "bugs": {
     "url": "https://github.com/statful/statful-client-nodejs/issues"

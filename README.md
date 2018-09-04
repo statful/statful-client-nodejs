@@ -20,6 +20,7 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 | Statful client Version | Tested NodeJS versions  |
 |:---|:---|
 | 4.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0`  |
+| 5.x.x | `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0`  |
 
 ## Installation
 
@@ -93,7 +94,7 @@ var statful = new Statful(config);
 
 ### Logger configuration
 
-Creates a simple client configuration and adds your favourite logger to the client like Bunyan, Winston or any other you want. **Just assure that logger object supports, at least, warn, debug and error methods**.
+Creates a simple client configuration and adds your favourite logger to the client like Bunyan, Winston or any other you want. **Just assure that logger object supports: log, info, warn, debug and error methods**.
 
 ```javascript
 var Statful = require('statful-client');
@@ -199,7 +200,7 @@ The custom options that can be set on config param are detailed below.
 | _default_ | Object to set methods options. | `object` | `{}` | **NO** |
 | _api_ | Defined API configurations. | `object` | **none** | **NO** |
 | _dryRun_ | Defines if metrics should be output to the logger instead of being send. | `boolean` | `false` | **NO** |
-| _disableSendFlushStats_ | Disables sending metrics with flush stats. | `boolean` | `false` | **NO** |
+| _systemStats_ | Enables sending metrics with flush stats. | `boolean` | `true` | **NO** |
 | _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `3000` | **NO** |
 | _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `1000` | **NO** |
 | _namespace_ | Defines the global namespace. | `string` | `application` | **NO** |
