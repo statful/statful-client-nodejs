@@ -5,8 +5,7 @@ node_js:
   - "6.9.2"
   - "7.10.1"
   - "8.2.0"
-before_install:
-  - npm install -g grunt-cli
+  - "10.9.0"
 install:
   - npm install
 before_script:

@@ -6,7 +6,7 @@ var Client = require('../lib/client');
 
 var udpServer = require('./tools/udp-server');
 var httpsServer = require('./tools/https-server');
-var logger = require('bunyan').createLogger({name: 'tests'});
+var logger = require('bunyan').createLogger({ name: 'tests' });
 
 var expect = require('chai').expect;
 
@@ -19,12 +19,15 @@ describe('When sending timer metrics', function () {
         token: 'my-token'
     };
 
-    var victim = new Client({
-        systemStats: false,
-        transport: 'udp',
-        port: udpPort,
-        flushSize: 1
-    }, logger);
+    var victim = new Client(
+        {
+            systemStats: false,
+            transport: 'udp',
+            port: udpPort,
+            flushSize: 1
+        },
+        logger
+    );
 
     it('should send simple timer with defaults', function (done) {
         // Given
@@ -34,7 +37,7 @@ describe('When sending timer metrics', function () {
         victim.timer('my_metric', 1, null, false);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,10$/);
@@ -47,10 +50,10 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.timer('my_metric', 1, {agg: ['last']});
+        victim.timer('my_metric', 1, { agg: ['last'] });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,last,10$/);
@@ -63,12 +66,14 @@ describe('When sending timer metrics', function () {
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
         // When
-        victim.timer('my_metric', 1, {tags: {cluster: 'test'}});
+        victim.timer('my_metric', 1, { tags: { cluster: 'test' } });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
-            expect(lines.toString()).to.match(/^application.timer.my_metric,cluster=test,unit=ms 1 \d+ avg,p90,count,10$/);
+            expect(lines.toString()).to.match(
+                /^application.timer.my_metric,cluster=test,unit=ms 1 \d+ avg,p90,count,10$/
+            );
             done();
         }
     });
@@ -77,12 +82,11 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-
         // When
-        victim.timer('my_metric', 1, {aggFreq: 120});
+        victim.timer('my_metric', 1, { aggFreq: 120 });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
@@ -94,23 +98,26 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: {
-                timer: {
-                    tags: {cluster: 'test'}
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: {
+                    timer: {
+                        tags: { cluster: 'test' }
+                    }
                 }
-            }
-        }, logger);
+            },
+            logger
+        );
 
         // When
         victim.timer('my_metric', 1);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,cluster=test 1 \d+ avg,p90,count,10$/);
@@ -122,26 +129,31 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: {
-                timer: {
-                    tags: { env: 'qa' }
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: {
+                    timer: {
+                        tags: { env: 'qa' }
+                    }
                 }
-            }
-        }, logger);
+            },
+            logger
+        );
 
         // When
-        victim.timer('my_metric', 1, {tags: {cluster: 'test'}});
+        victim.timer('my_metric', 1, { tags: { cluster: 'test' } });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
-            expect(lines.toString()).to.match(/^application.timer.my_metric,cluster=test,env=qa 1 \d+ avg,p90,count,10$/);
+            expect(lines.toString()).to.match(
+                /^application.timer.my_metric,cluster=test,env=qa 1 \d+ avg,p90,count,10$/
+            );
             done();
         }
     });
@@ -150,23 +162,26 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: {
-                timer: {
-                    agg: ['sum']
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: {
+                    timer: {
+                        agg: ['sum']
+                    }
                 }
-            }
-        }, logger);
+            },
+            logger
+        );
 
         // When
         victim.timer('my_metric', 1);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ sum,10$/);
@@ -174,28 +189,30 @@ describe('When sending timer metrics', function () {
         }
     });
 
-
     it('should configure default aggregation frequency for timers', function (done) {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: {
-                timer: {
-                    aggFreq: 120
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: {
+                    timer: {
+                        aggFreq: 120
+                    }
                 }
-            }
-        }, logger);
+            },
+            logger
+        );
 
         // When
         victim.timer('my_metric', 1);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
@@ -207,23 +224,26 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: {
-                timer: {
-                    aggFreq: 60
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: {
+                    timer: {
+                        aggFreq: 60
+                    }
                 }
-            }
-        }, logger);
+            },
+            logger
+        );
 
         // When
-        victim.timer('my_metric', 1, {aggFreq: 120});
+        victim.timer('my_metric', 1, { aggFreq: 120 });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,120$/);
@@ -235,18 +255,21 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1
-        }, logger);
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1
+            },
+            logger
+        );
 
         // When
-        victim.timer('my_metric', 1, {agg: ['sum']});
+        victim.timer('my_metric', 1, { agg: ['sum'] });
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,sum,10$/);
@@ -258,19 +281,22 @@ describe('When sending timer metrics', function () {
         // Given
         udpServer.start(udpPort, '127.0.0.1', null, onResponse);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'udp',
-            port: udpPort,
-            flushSize: 1,
-            default: { timer: {}}
-        }, logger);
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'udp',
+                port: udpPort,
+                flushSize: 1,
+                default: { timer: {} }
+            },
+            logger
+        );
 
         // When
         victim.timer('my_metric', 1);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             udpServer.stop();
 
             expect(lines.toString()).to.match(/^application.timer.my_metric,unit=ms 1 \d+ avg,p90,count,10$/);
@@ -282,23 +308,28 @@ describe('When sending timer metrics', function () {
         // Given
         httpsServer.start(httpPort, '127.0.0.1', onResponse, 201, true);
 
-        var victim = new Client({
-            systemStats: false,
-            transport: 'api',
-            api: apiConf,
-            compression: true,
-            flushSize: 2
-        }, logger);
+        var victim = new Client(
+            {
+                systemStats: false,
+                transport: 'api',
+                api: apiConf,
+                compression: true,
+                flushSize: 2
+            },
+            logger
+        );
 
         // When
         victim.aggregatedTimer('my_metric1', 1, 'avg', 60);
         victim.aggregatedTimer('my_metric2', 1, 'avg', 60);
 
         // Then
-        function onResponse(lines) {
+        function onResponse (lines) {
             httpsServer.stop();
 
-            expect(lines.toString()).to.match(/^application\.timer\.my_metric1,unit=ms 1 \d+\napplication\.timer\.my_metric2,unit=ms 1 \d+$/);
+            expect(lines.toString()).to.match(
+                /^application\.timer\.my_metric1,unit=ms 1 \d+\napplication\.timer\.my_metric2,unit=ms 1 \d+$/
+            );
             done();
         }
     });
