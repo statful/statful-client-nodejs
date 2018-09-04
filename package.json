@@ -14,7 +14,7 @@
   "main": "statful.js",
   "scripts": {
     "eslint": "eslint lib",
-    "cover": "istanbul cover _mocha spec/*.js",
+    "cover": "mocha spec/*.js --exit",
     "test": "npm run eslint && npm run cover"
   },
   "dependencies": {
@@ -26,8 +26,7 @@
     "bunyan": "^1.8.12",
     "chai": "4.1.2",
     "eslint": "5.5.0",
-    "istanbul": "0.4.5",
-    "mocha": "3.5.3",
+    "mocha": "5.2.0",
     "sinon": "6.1.5"
   },
   "bugs": {
