@@ -19,8 +19,9 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 
 | Statful client Version | Tested NodeJS versions  |
 |:---|:---|
-| 4.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0`  |
-| 5.x.x | `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0`  |
+| 4.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0` |
+| 5.x.x | `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0` |
+| 6.x.x | `8.2.0`, `8.12.0`, `10.12.0`, `11.0.0` |
 
 ## Installation
 
@@ -200,7 +201,6 @@ The custom options that can be set on config param are detailed below.
 | _default_ | Object to set methods options. | `object` | `{}` | **NO** |
 | _api_ | Defined API configurations. | `object` | **none** | **NO** |
 | _dryRun_ | Defines if metrics should be output to the logger instead of being send. | `boolean` | `false` | **NO** |
-| _systemStats_ | Enables sending metrics with flush stats. | `boolean` | `true` | **NO** |
 | _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `3000` | **NO** |
 | _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `1000` | **NO** |
 | _namespace_ | Defines the global namespace. | `string` | `application` | **NO** |
@@ -242,6 +242,35 @@ Read the methods options reference bellow to get more information about the defa
 | **_namespace_** (`string`)  - Defines the namespace of the metric. It overrides the global namespace configuration. | `application` | `application` | `application` | `application` | **YES** |
 | **_tags_** (`object`) - Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
 | **_timestamp_** (`string`)  - Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**.  | `current timestamp` | `current timestamp` | `current timestamp` | `current timestamp` | **YES** |
+
+## Plugins
+It is possible to use plugin with the client.
+```javascript
+    var SystemStatsPlugin = require('statful-client').systemStatsPlugin;
+    var statful = new Statful(config, log);
+    statful.use(new SystemStatsPlugin());
+```
+### System Stats Plugin
+This plugin allows the client to send system-related metrics and/or enrich the user metrics with system tags.
+
+#### System Stats Plugin Configuration
+
+The custom options that can be set on config param are detailed below.
+
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _bufferFlushLength_ | Defines the application global name. If specified sets a global tag `app=setValue`. | `metric` | true | **NO** |
+| _timerEventLoop_ | Object to set methods options. | `metric` | true | **NO** |
+| _processUptime_ | Uptime of the process in **miliseconds**. | `metric` | true | **NO** |
+| _processMemoryUsage_ | Process memory usage in **bytes**. | `metric` | true | **NO** |
+| _processMemoryUsagePerc_ | Process memory usage **percentage**. (compared to total OS memory) | `metric` | true | **NO** |
+| _osUptime_ | OS uptime in **miliseconds**. | `metric` | true | **NO** |
+| _osTotalMemory_ | OS total memory in **bytes**. | `metric` | true | **NO** |
+| _osFreeMemory_ | OS free memory in **bytes**. | `metric` | true | **NO** |
+| _tagHostname_ | Hostname. | `tag` | true | **NO** |
+| _tagPlatform_ | Platform. | `tag` | true | **NO** |
+| _tagArchitecture_ | Architecture. | `tag` | true | **NO** |
+| _tagNodeVersion_ | NodeJS Version | `tag` | true | **NO** |
 
 ## Authors
 

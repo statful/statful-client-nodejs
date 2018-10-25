@@ -13,3 +13,6 @@ coverage
 .DS_Store
 
 .history
+.elasticbeanstalk
+.vscode
+.nyc_output

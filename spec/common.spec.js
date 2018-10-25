@@ -3,6 +3,22 @@
 /*jshint -W003 */
 
 var Client = require('../lib/client');
+var SystemStatsPlugin = require('../plugins/system-stats.js');
+var pluginConfig = {
+    bufferFlushLength: true,
+    timerEventLoop: false,
+    processUptime: false,
+    processMemoryUsage: false,
+    processMemoryUsagePerc: false,
+    osCpuUsage: false,
+    osUptime: false,
+    osTotalMemory: false,
+    osFreeMemory: false,
+    tagHostname: false,
+    tagPlatform: false,
+    tagArchitecture: false,
+    tagNodeVersion: false
+}
 
 var udpServer = require('./tools/udp-server');
 var httpsServer = require('./tools/https-server');
@@ -891,11 +907,10 @@ describe('When sending metrics', function () {
         done();
     });
 
-    it('should log metrics when dryRun is activated (systemStats)', function (done) {
+    it('should log metrics when dryRun is activated', function (done) {
         // Given
         var victim = new Client(
             {
-                systemStats: true,
                 transport: 'api',
                 api: apiConf,
                 flushSize: 1,
@@ -903,6 +918,7 @@ describe('When sending metrics', function () {
             },
             logger
         );
+        victim.use(new SystemStatsPlugin(pluginConfig));
 
         sinon.spy(victim.logger, 'debug');
 
@@ -911,71 +927,11 @@ describe('When sending metrics', function () {
 
         // Then
         setTimeout(function () {
-            expect(victim.logger.debug.getCall(1).args[0]).to.match(
-                /^Flushing metrics \(system stats\): application\.buffer\.flush_length,buffer_type=non-aggregated 1 \d+ avg,sum,10\napplication\.buffer\.flush_length,buffer_type=system-stats 1 \d+ avg,sum,10/
+            expect(victim.logger.debug.getCall(0).args[0]).to.match(
+                /^Flushing metrics \(non aggregated\): application\.my_metric/
             );
-
             victim.logger.debug.restore();
             done();
         });
-    });
-
-    it('should send system stats metrics through UDP', function (done) {
-        // Given
-        udpServer.start(udpPort, '127.0.0.1', null, onResponse);
-        var victim = new Client(
-            {
-                systemStats: true,
-                transport: 'udp',
-                port: udpPort,
-                flushSize: 1,
-                flushInterval: 10000
-            },
-            logger
-        );
-        // When
-        victim.put('my_metric', 1, null, false);
-        // Then
-        function onResponse (lines) {
-            //expect my_metric
-            if (lines.toString().indexOf('\n') === -1) {
-                expect(lines.toString()).to.match(/^application.my_metric 1 \d+$/);
-            } else {
-                //expect systemStats after that
-                expect(lines.toString()).to.match(
-                    /^application\.buffer\.flush_length,buffer_type=non-aggregated 1 \d+ avg,sum,10\napplication.buffer.flush_length,buffer_type=system-stats 1 \d+ avg,sum,10,10/
-                );
-                udpServer.stop();
-                done();
-            }
-        }
-    });
-
-    it('should send system stats metrics through HTTPS', function (done) {
-        // Given
-        httpsServer.start(httpPort, '127.0.0.1', onResponse);
-        var victim = new Client(
-            {
-                systemStats: true,
-                transport: 'api',
-                api: apiConf,
-                flushSize: 1
-            },
-            logger
-        );
-        // When
-        victim.put('my_metric', 1);
-        // Then
-        function onResponse (lines) {
-            if (lines.toString().indexOf('\n') === -1) {
-                expect(lines).to.match(/^application\.my_metric 1 \d+$/);
-            } else {
-                expect(lines).to.match(
-                    /^application\.buffer\.flush_length,buffer_type=non-aggregated 1 \d+ avg,sum,10\napplication.buffer.flush_length,buffer_type=system-stats 1 \d+ avg,sum,10,10/
-                );
-                httpsServer.stop();
-                done();
-            }
-        }
     });
 });
