@@ -243,6 +243,35 @@ Read the methods options reference bellow to get more information about the defa
 | **_tags_** (`object`) - Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
 | **_timestamp_** (`string`)  - Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**.  | `current timestamp` | `current timestamp` | `current timestamp` | `current timestamp` | **YES** |
 
+## Plugins
+It is possible to use plugin with the client.
+```javascript
+    var SystemStatsPlugin = require('./plugins/system-stats.js');
+    var statful = new Statful(config, log);
+    statful.use(new SystemStatsPlugin());
+```
+### System Stats Plugin
+This plugin allows the client to send system-related metrics and/or enrich the user metrics with system tags.
+
+#### System Stats Plugin Configuration
+
+The custom options that can be set on config param are detailed below.
+
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _bufferFlushLength_ | Defines the application global name. If specified sets a global tag `app=setValue`. | `metric` | true | **NO** |
+| _timerEventLoop_ | Object to set methods options. | `metric` | true | **NO** |
+| _processUptime_ | Uptime of the process in **miliseconds**. | `metric` | true | **NO** |
+| _processMemoryUsage_ | Process memory usage in **bytes**. | `metric` | true | **NO** |
+| _processMemoryUsagePerc_ | Process memory usage **percentage**. (compared to total OS memory) | `metric` | true | **NO** |
+| _osUptime_ | OS uptime in **miliseconds**. | `metric` | true | **NO** |
+| _osTotalMemory_ | OS total memory in **bytes**. | `metric` | true | **NO** |
+| _osFreeMemory_ | OS free memory in **bytes**. | `metric` | true | **NO** |
+| _tagHostname_ | Hostname. | `tag` | true | **NO** |
+| _tagPlatform_ | Platform. | `tag` | true | **NO** |
+| _tagArchitecture_ | Architecture. | `tag` | true | **NO** |
+| _tagNodeVersion_ | NodeJS Version | `tag` | true | **NO** |
+
 ## Authors
 
 [Mindera - Software Craft](https://github.com/Mindera)
