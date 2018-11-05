@@ -257,20 +257,20 @@ This plugin allows the client to send system-related metrics and/or enrich the u
 
 The custom options that can be set on config param are detailed below.
 
-| Option | Description | Type | Default | Required |
-|:---|:---|:---|:---|:---|
-| _bufferFlushLength_ | Defines the application global name. If specified sets a global tag `app=setValue`. | `metric` | true | **NO** |
-| _timerEventLoop_ | Object to set methods options. | `metric` | true | **NO** |
-| _processUptime_ | Uptime of the process in **miliseconds**. | `metric` | true | **NO** |
-| _processMemoryUsage_ | Process memory usage in **bytes**. | `metric` | true | **NO** |
-| _processMemoryUsagePerc_ | Process memory usage **percentage**. (compared to total OS memory) | `metric` | true | **NO** |
-| _osUptime_ | OS uptime in **miliseconds**. | `metric` | true | **NO** |
-| _osTotalMemory_ | OS total memory in **bytes**. | `metric` | true | **NO** |
-| _osFreeMemory_ | OS free memory in **bytes**. | `metric` | true | **NO** |
-| _tagHostname_ | Hostname. | `tag` | true | **NO** |
-| _tagPlatform_ | Platform. | `tag` | true | **NO** |
-| _tagArchitecture_ | Architecture. | `tag` | true | **NO** |
-| _tagNodeVersion_ | NodeJS Version | `tag` | true | **NO** |
+| Option | Display name | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|:---|
+| _bufferFlushLength_ | `.buffler.flush_length` | Defines the application global name. If specified sets a global tag `app=setValue`. | `metric` | false | **NO** |
+| _timerEventLoop_ | `.timer.event_loop` | Object to set methods options. | `metric` | false | **NO** |
+| _processUptime_ | `.process.uptime` | Uptime of the process in **miliseconds**. | `metric` | false | **NO** |
+| _processMemoryUsage_ | `process.memory.usage` | Process memory usage in **bytes**. | `metric` | false | **NO** |
+| _processMemoryUsagePerc_ | `process.memory.usage.perc` | Process memory usage **percentage**. (compared to total OS memory) | `metric` | false | **NO** |
+| _osUptime_ | `.os.uptime` | OS uptime in **miliseconds**. | `metric` | false | **NO** |
+| _osTotalMemory_ | `.os.memory.total` | OS total memory in **bytes**. | `metric` | false | **NO** |
+| _osFreeMemory_ | `os.memory.free` | OS free memory in **bytes**. | `metric` | false | **NO** |
+| _tagHostname_ | `hostname` | Hostname. | `tag` | false | **NO** |
+| _tagPlatform_ | `platform` | Platform. | `tag` | false | **NO** |
+| _tagArchitecture_ | `architecture` | Architecture. | `tag` | false | **NO** |
+| _tagNodeVersion_ | `node_version` | NodeJS Version | `tag` | false | **NO** |
 
 ## Authors
 
