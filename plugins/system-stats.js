@@ -112,8 +112,8 @@ var SystemStatsPlugin = function (configs) {
 
     // System Metrics
     this.metrics = {
-        bufferFlushLength: configs.bufferFlushLength || true,
-        timerEventLoop: configs.timerEventLoop || true,
+        bufferFlushLength: configs.bufferFlushLength || false,
+        timerEventLoop: configs.timerEventLoop || false,
         processUptime: configs.processUptime || false,
         processMemoryUsage: configs.processMemoryUsage || false,
         processMemoryUsagePerc: configs.processMemoryUsagePerc || false,
@@ -165,6 +165,16 @@ SystemStatsPlugin.prototype.onInit = function (client) {
     }
 };
 
+function pluginsBuffersSize (buffers) {
+    var size = 0;
+
+    for (var i in buffers) {
+        size += buffers[i].bufferSize;
+    }
+
+    return size;
+}
+
 SystemStatsPlugin.prototype.onFlush = function (client) {
     //process
     var procMem = process.memoryUsage().rss,
@@ -173,6 +183,28 @@ SystemStatsPlugin.prototype.onFlush = function (client) {
         procMemPerc = (procMem * 100) / osTotMem,
         procUptimeMs = process.uptime() * 1000,
         osUptimeMs = os.uptime() * 1000;
+
+    if (this.metrics.bufferFlushLength) {
+        var aggregations = ['avg', 'sum'];
+        if (client.aggregatedBuffer.bufferSize > 0 && client.transport === 'api') {
+            putSystemStatsMetrics(client, 'buffer.flush_length', client.aggregatedBuffer.bufferSize, {
+                agg: aggregations,
+                tags: { buffer_type: 'aggregated' }
+            });
+        }
+        if (client.nonAggregatedBuffer.bufferSize > 0) {
+            putSystemStatsMetrics(client, 'buffer.flush_length', client.nonAggregatedBuffer.bufferSize, {
+                agg: aggregations,
+                tags: { buffer_type: 'non-aggregated' }
+            });
+        }
+        if (pluginsBuffersSize(client.pluginBuffers) > 0) {
+            putSystemStatsMetrics(client, 'buffer.flush_length', pluginsBuffersSize(client.pluginBuffers), {
+                agg: aggregations,
+                tags: { buffer_type: 'system-stats' }
+            });
+        }
+    }
 
     if (this.metrics.processUptime) {
         putSystemStatsMetrics(client, 'process.uptime', procUptimeMs, {
