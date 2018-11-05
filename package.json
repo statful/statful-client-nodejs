@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/statful/statful-client-nodejs.git"
   },
-  "version": "6.0.0",
+  "version": "6.1.0",
   "engines": {
     "node": ">=4.4.0"
   },
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "blocked": "^1.2.1",
-    "merge": "^1.2.0",
+    "merge": "^1.2.1",
     "unique-concat": "^0.2.2"
   },
   "devDependencies": {
