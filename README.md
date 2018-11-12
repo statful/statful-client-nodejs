@@ -237,7 +237,7 @@ Read the methods options reference bellow to get more information about the defa
 
 | Description | Default for Counter | Default for Gauge | Default for Timer | Default for Put | Available for Aggregated Methods |
 |:---|:---|:---|:---|:---|:---|
-| **_agg_** (`array`)  - Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, min, max` | `['sum', 'count']` | `[last]` | `['avg', 'p90', 'count']` | `[]` | **NO** |
+| **_agg_** (`array`)  - Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, p99, min, max` | `['sum', 'count']` | `[last]` | `['avg', 'p90', 'count']` | `[]` | **NO** |
 | **_aggFreq_** (`number`) - Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `10` | `10` | `10` | `10`' | **NO** |
 | **_namespace_** (`string`)  - Defines the namespace of the metric. It overrides the global namespace configuration. | `application` | `application` | `application` | `application` | **YES** |
 | **_tags_** (`object`) - Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
