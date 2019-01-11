@@ -1,3 +1,4 @@
+
 Statful Client for NodeJS
 ==============
 
@@ -10,14 +11,23 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 * [Supported Versions of NodeJS](#supported-versions-of-nodejs)
 * [Installation](#installation)
 * [Quick Start](#quick-start)
-* [Examples](#examples)
 * [Reference](#reference)
-* [Authors](#authors)
+  * [Global Configuration](#global-configuration)
+  * [Methods](#methods)
+  * [Plugins](#plugins)
+* [Examples](#examples)
+  * [UDP Configuration](#udp-configuration)
+  * [HTTP Configuration](#http-configuration)
+  * [Logger Configuration](#logger-configuration)
+   * [Configuration of Defaults per Method](#configuration-of-defaults-per-method)
+  * [Preset Configuration](#preset-configuration)
+  * [Send Metrics Configuration](#send-metrics-configuration)
+ * [Authors](#authors)
 * [License](#license)
 
 ## Supported Versions of NodeJS
 
-| Statful client Version | Tested NodeJS versions  |
+| Statful Client version | Tested NodeJS versions  |
 |:---|:---|
 | 4.x.x | `4.4.0`, `5.12.0`, `6.9.2`, `7.10.1`, `8.2.0` |
 | 5.x.x | `6.9.2`, `7.10.1`, `8.2.0`, `10.9.0` |
@@ -29,14 +39,14 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 $ npm install statful-client --save
 ```
 
-## Quick start
+## Quick Start
 
-After installing Statful Client you are ready to use it. The quickest way is to do the following:
+After installing Statful’s NodeJS Client, you are ready to start using it. You can use it straight away by doing:
 
 ```javascript
 var Statful = require('statful-client');
 
-// Creates an object with the configuration and pass it to the client
+// Creates an object with the desired configuration and pass it to the client
 var config = {
     app: 'AccountService',
     transport: 'api',
@@ -47,19 +57,109 @@ var config = {
 };
 var statful = new Statful(config);
 
-// Send a metric
+// Send a `counter` metric
 statful.counter('transactions', 1);
 ```
 
-> **IMPORTANT:** This configuration uses the default **host** and **port**. You can learn more about configuration in [Reference](#reference).
+> **IMPORTANT:** This configuration uses the default **host** and **port**. You can find more configurations in the [Examples](#examples) section.
+
+
+## Reference
+
+The following section presents a detailed reference of the available options to take full advantage of Statful.
+
+### Global Configuration
+
+Below you can find the information on the custom options to set up the configurations parameters.
+
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _app_ | Defines the application's global name. When specified, it sets a global tag like `app=setValue`. | `string` | **none** | **NO** |
+| _default_ | Object for setting methods' options. | `object` | `{}` | **NO** |
+| _api_ | Object for setting API configurations: authentication and timeout. | `object` | **none** | **NO** |
+| _dryRun_ | Defines if metrics should be output to the logger instead of being sent to Statful (useful for testing/debugging purposes). | `boolean` | `false` | **NO** |
+| _flushInterval_ | Defines the periodicity of buffer flushes in **milliseconds**. | `number` | `3000` | **NO** |
+| _flushSize_ | Defines the maximum buffer size before performing a flush, in **milliseconds**. | `number` | `1000` | **NO** |
+| _namespace_ | Defines the global namespace. A prefix could be set if the user sends metrics through Statful. | `string` | `application` | **NO** |
+| _sampleRate_ | Defines the rate sampling. **It should be a number between [1, 100]**. | `number` | `100` | **NO** |
+| _tags_ | Object for setting the global tags. | `object` | `{}` | **NO** |
+| _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
+| _host_ | Defines the hostname to where the metrics are sent. You can also set it inside _api_. | `string` | `127.0.0.1` | **NO** |
+| _path_ | Defines the API path to where the metrics are sent. You can also set it inside _api_. | `string` | `/tel/v2.0/metric` | **NO** |
+| _port_ | Defines the port where the metrics are sent. You can also set it inside _api_. | `string` | `2013` | **NO** |
+| _token_ | Defines the token used to match incoming data to Statful. It can only be set inside _api_. | `string` | **none** | **YES** |
+| _timeout_ | Defines the timeout for the transport layers in **milliseconds**. It can only be set inside _api_. | `number` | `2000` | **NO** |
+
+### Methods
+
+```javascript
+// Non-Aggregated Metrics
+- statful.counter('myCounter', 1, {agg: ['sum']});
+- statful.gauge('myGauge', 10, { tags: { host: 'localhost' } });
+- statful.timer('myCounter', 200, {namespace: 'sandbox'});
+- statful.put('myCustomMetric', 200, {timestamp: '1471519331'});
+
+// Aggregated Metrics
+- statful.aggregatedCounter('myCounter', 1, 'avg', 60, { tags: { host: 'localhost' } });
+- statful.aggregatedGauge('myGauge', 10, 'avg', 60, { tags: { host: 'localhost' } });
+- statful.aggregatedTimer('myCounter', 200, 'avg', 60, {namespace: 'sandbox'});
+- statful.aggregatedPut('myCustomMetric', 200, 'avg', 60, {timestamp: '1471519331'});
+```
+The methods for non-aggregated metrics receive a metric name and value as arguments and send a counter, a gauge, a timer or a custom metric.
+
+The methods for aggregated metrics receive a metric name and value, an aggregation and an aggregation frequency (the one used beforehand to aggregate the metric) as arguments, and send a counter, a gauge, a timer or a custom metric. Whenever the options parameter is left out, the default values are used instead.
+
+The latter methods are a valuable asset to address the need of ingestion of already aggregated metrics into Statful (for example, aggregated metrics from AWS CloudWatch). For more information about the default values, read the methods options' reference presented next.
+
+> **IMPORTANT:** You can only send aggregated metrics with an `api` transport type. Otherwise, the metrics are discarded, and they will not be sent.
+
+| Description | Default for Counter | Default for Gauge | Default for Timer | Default for Put | Available for Aggregated Methods |
+|:---|:---|:---|:---|:---|:---|
+| **_agg_** (`array`)  - Defines the aggregations to execute. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, p99, min, max` | `['sum', 'count']` | `['last']` | `['avg', 'p90', 'count']` | `[]` | **NO** |
+| **_aggFreq_** (`number`) - Defines the aggregation frequency, in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `10` | `10` | `10` | `10` | **NO** |
+| **_namespace_** (`string`)  - Defines the namespace of the metric. It overrides the global namespace configuration. | `application` | `application` | `application` | `application` | **YES** |
+| **_tags_** (`object`) - Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
+| **_timestamp_** (`string`)  - Defines the timestamp of the metric. This timestamp is a **UNIX Epoch** time, represented in **seconds**.  | `current timestamp` | `current timestamp` | `current timestamp` | `current timestamp` | **YES** |
+
+## Plugins
+
+### System Stats Plugin
+
+This plugin allows the client to send system-related metrics and to enrich the user's metrics with system tags.
+
+It is possible to use this plugin with the client as follows:
+```javascript
+    var SystemStatsPlugin = require('statful-client').systemStatsPlugin;
+    var statful = new Statful(config, log);
+    statful.use(new SystemStatsPlugin());
+```
+
+#### System Stats Plugin Configuration
+
+The custom options available to set on config param are detailed below.
+
+| Option | Display name | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|:---|
+| _bufferFlushLength_ | `.buffler.flush_length` | Length of the queue on flush events | `number` | **none**| **NO** |
+| _timerEventLoop_ | `.timer.event_loop` | Time spent to execute the callback in **milliseconds** | `number` | **none**| **NO** |
+| _processUptime_ | `.process.uptime` | Uptime of the process in **milliseconds** | `number` | **none**| **NO** |
+| _processMemoryUsage_ | `process.memory.usage` | Process memory usage in **bytes** | `number` | **none**| **NO** |
+| _processMemoryUsagePerc_ | `process.memory.usage.perc` | Process memory usage in **percentage** (compared to total OS memory) | `number` | **none**| **NO** |
+| _osUptime_ | `.os.uptime` | OS uptime in **milliseconds** | `number` | **none**| **NO** |
+| _osTotalMemory_ | `.os.memory.total` | OS total memory in **bytes** | `number` | **none**| **NO** |
+| _osFreeMemory_ | `os.memory.free` | OS free memory in **bytes** | `number` | **none**| **NO** |
+| _tagHostname_ | `hostname` | Hostname | `string` | **none**| **NO** |
+| _tagPlatform_ | `platform` | Platform | `string` | **none**| **NO** |
+| _tagArchitecture_ | `architecture` | Architecture | `string` | **none**| **NO** |
+| _tagNodeVersion_ | `node_version` | NodeJS Version | `string` | **none**| **NO** |
 
 ## Examples
 
-You can find here some useful usage examples of the Statful Client. In the following examples is assumed you have already installed and included Statful Client in your project.
+Here you can find some useful usage examples of the Statful’s NodeJS Client. In the following examples, we assume that you have already installed and included the Statful Client in your project with success.
 
 ### UDP Configuration
 
-Creates a simple UDP configuration for the client.
+Create a simple UDP configuration for the client.
 
 ```javascript
 var Statful = require('statful-client');
@@ -76,7 +176,7 @@ var statful = new Statful(config);
 
 ### HTTP Configuration
 
-Creates a simple HTTP API configuration for the client.
+Create a simple HTTP API configuration for the client.
 
 ```javascript
 var Statful = require('statful-client');
@@ -95,7 +195,7 @@ var statful = new Statful(config);
 
 ### Logger configuration
 
-Creates a simple client configuration and adds your favourite logger to the client like Bunyan, Winston or any other you want. **Just assure that logger object supports: log, info, warn, debug and error methods**.
+Create a simple client configuration to add your favorite logger to the client such as Bunyan, Winston or others. **The only requirement is to make sure that the chosen logger object supports: log, info, warn, debug and error methods.**
 
 ```javascript
 var Statful = require('statful-client');
@@ -113,9 +213,9 @@ var config = {
 var statful = new Statful(config, logger);
 ```
 
-### Defaults Configuration Per Method
+### Configuration of Defaults per Method
 
-Creates a configuration for the client with custom default options per method.
+Create a configuration for the client where you define custom default options per method.
 
 ```javascript
 var Statful = require('statful-client');
@@ -136,9 +236,9 @@ var config = {
 var statful = new Statful(config);
 ```
 
-### Mixed Complete Configuration
+### Preset Configuration
 
-Creates a configuration defining a value for every available option.
+Create a configuration where you define a value for currently available options.
 
 ```javascript
 var Statful = require('statful-client');
@@ -162,9 +262,9 @@ var config = {
 var statful = new Statful(config);
 ```
 
-### Add metrics
+### Send Metrics Configuration
 
-Creates a simple client configuration and use it to send some metrics.
+Create a simple client configuration to send a few metrics.
 
 ```javascript
 var Statful = require('statful-client');
@@ -178,99 +278,14 @@ var config = {
 
 var statful = new Statful(config);
 
-// Send three different metrics (gauge, timer and a counter)
+// Send three different metrics (gauge, timer and counter)
 statful.gauge('testGauge', 10);
 statful.timer('testTimer', 100);
 statful.counter('testCounter', 1, { agg: ['first'], aggFreq: 60, namespace: 'sandbox' });
 
-// Metric to be sent with tags
+// Send a metric with custom tags
 statful.counter('testCounter', 1, {tags: {host: 'localhost', status: 'SUCCESS'}});
 ```
-
-## Reference
-
-Detailed reference if you want to take full advantage from Statful.
-
-### Global configuration
-
-The custom options that can be set on config param are detailed below.
-
-| Option | Description | Type | Default | Required |
-|:---|:---|:---|:---|:---|
-| _app_ | Defines the application global name. If specified sets a global tag `app=setValue`. | `string` | **none** | **NO** |
-| _default_ | Object to set methods options. | `object` | `{}` | **NO** |
-| _api_ | Defined API configurations. | `object` | **none** | **NO** |
-| _dryRun_ | Defines if metrics should be output to the logger instead of being send. | `boolean` | `false` | **NO** |
-| _flushInterval_ | Defines the periodicity of buffer flushes in **miliseconds**. | `number` | `3000` | **NO** |
-| _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `1000` | **NO** |
-| _namespace_ | Defines the global namespace. | `string` | `application` | **NO** |
-| _sampleRate_ | Defines the rate sampling. **Should be a number between [1, 100]**. | `number` | `100` | **NO** |
-| _tags_ | Defines the global tags. | `object` | `{}` | **NO** |
-| _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
-| _host_ | Defines the host name to where the metrics should be sent. Can also be set inside _api_. | `string` | `127.0.0.1` | **NO** |
-| _path_ | Defines the api path to where the metrics should be sent. Can also be set inside _api_. | `string` | `/tel/v2.0/metric` | **NO** |
-| _port_ | Defines the port. Can also be set inside _api_. | `string` | `2013` | **NO** |
-| _token_ | Defines the token to be used.  Must be set inside _api_. | `string` | **none** | **NO** |
-| _timeout_ | Defines the timeout for the transport layers in **miliseconds**. Must be set inside _api_. | `number` | `2000` | **NO** |
-
-### Methods
-
-```javascript
-// Non Aggregated Metrics
-- statful.counter('myCounter', 1, {agg: ['sum']});
-- statful.gauge('myGauge', 10, { tags: { host: 'localhost' } });
-- statful.timer('myCounter', 200, {namespace: 'sandbox'});
-- statful.put('myCustomMetric', 200, {timestamp: '1471519331'});
-
-// Aggregated Metrics
-- statful.aggregatedCounter('myCounter', 1, 'avg', 60, { tags: { host: 'localhost' } });
-- statful.aggregatedGauge('myGauge', 10, 'avg', 60, { tags: { host: 'localhost' } });
-- statful.aggregatedTimer('myCounter', 200, 'avg', 60, {namespace: 'sandbox'});
-- statful.aggregatedPut('myCustomMetric', 200, 'avg', 60, {timestamp: '1471519331'});
-```
-The methods for non aggregated metrics receive a metric name and a metric value as arguments and send a counter/gauge/timer/custom metric.
-The methods for aggregated metrics receive a metric name, a metric value, an aggregation and an aggregation frequency (used previously to aggregate the metric) as arguments and send a counter/gauge/timer/custom metric.
-If the options parameter is omitted, the default values are used. Those methods are truly valuable due to need of ingest already aggregated metrics into Statful (for example from AWS CloudWatch).
-Read the methods options reference bellow to get more information about the default values.
-
-> **IMPORTANT:** You can only send aggregated metrics with `api` transport type. Otherwise metrics will be discarded and not be sent.
-
-| Description | Default for Counter | Default for Gauge | Default for Timer | Default for Put | Available for Aggregated Methods |
-|:---|:---|:---|:---|:---|:---|
-| **_agg_** (`array`)  - Defines the aggregations to be executed. These aggregations are merged with the ones configured globally, including method defaults.<br><br> **Valid Aggregations:** `avg, count, sum, first, last, p90, p95, p99, min, max` | `['sum', 'count']` | `[last]` | `['avg', 'p90', 'count']` | `[]` | **NO** |
-| **_aggFreq_** (`number`) - Defines the aggregation frequency in **seconds**. It overrides the global aggregation frequency configuration.<br><br> **Valid Aggregation Frequencies:** `10, 30, 60, 120, 180, 300` | `10` | `10` | `10` | `10`' | **NO** |
-| **_namespace_** (`string`)  - Defines the namespace of the metric. It overrides the global namespace configuration. | `application` | `application` | `application` | `application` | **YES** |
-| **_tags_** (`object`) - Defines the tags of the metric. These tags are merged with the ones configured globally, including method defaults. | `{}` | `{}` | `{ unit: 'ms' }` | `{}` | **YES** |
-| **_timestamp_** (`string`)  - Defines the timestamp of the metric. This timestamp is a **POSIX/Epoch** time in **seconds**.  | `current timestamp` | `current timestamp` | `current timestamp` | `current timestamp` | **YES** |
-
-## Plugins
-It is possible to use plugin with the client.
-```javascript
-    var SystemStatsPlugin = require('statful-client').systemStatsPlugin;
-    var statful = new Statful(config, log);
-    statful.use(new SystemStatsPlugin());
-```
-### System Stats Plugin
-This plugin allows the client to send system-related metrics and/or enrich the user metrics with system tags.
-
-#### System Stats Plugin Configuration
-
-The custom options that can be set on config param are detailed below.
-
-| Option | Display name | Description | Type | Default | Required |
-|:---|:---|:---|:---|:---|:---|
-| _bufferFlushLength_ | `.buffler.flush_length` | Defines the application global name. If specified sets a global tag `app=setValue`. | `metric` | false | **NO** |
-| _timerEventLoop_ | `.timer.event_loop` | Object to set methods options. | `metric` | false | **NO** |
-| _processUptime_ | `.process.uptime` | Uptime of the process in **miliseconds**. | `metric` | false | **NO** |
-| _processMemoryUsage_ | `process.memory.usage` | Process memory usage in **bytes**. | `metric` | false | **NO** |
-| _processMemoryUsagePerc_ | `process.memory.usage.perc` | Process memory usage **percentage**. (compared to total OS memory) | `metric` | false | **NO** |
-| _osUptime_ | `.os.uptime` | OS uptime in **miliseconds**. | `metric` | false | **NO** |
-| _osTotalMemory_ | `.os.memory.total` | OS total memory in **bytes**. | `metric` | false | **NO** |
-| _osFreeMemory_ | `os.memory.free` | OS free memory in **bytes**. | `metric` | false | **NO** |
-| _tagHostname_ | `hostname` | Hostname. | `tag` | false | **NO** |
-| _tagPlatform_ | `platform` | Platform. | `tag` | false | **NO** |
-| _tagArchitecture_ | `architecture` | Architecture. | `tag` | false | **NO** |
-| _tagNodeVersion_ | `node_version` | NodeJS Version | `tag` | false | **NO** |
 
 ## Authors
 
