@@ -35,13 +35,15 @@ Statful client for NodeJS written in Javascript. This client is intended to gath
 
 ## Installation
 
+First, install Statful’s NodeJS Client into your System, in the same path as your JS file, by executing the below command:
+
 ```bash
 $ npm install statful-client --save
 ```
 
 ## Quick Start
 
-After installing Statful’s NodeJS Client, you are ready to start using it. You can use it straight away by doing:
+After installing Statful’s NodeJS Client, you are ready to push your metric into Statful by adding the below code into your js file:
 
 ```javascript
 var Statful = require('statful-client');
@@ -61,7 +63,8 @@ var statful = new Statful(config);
 statful.counter('transactions', 1);
 ```
 
-> **IMPORTANT:** This configuration uses the default **host** and **port**. You can find more configurations in the [Examples](#examples) section.
+> **IMPORTANT:** This configuration uses the default **host** and **port**. You can find these default values in the below table. 
+[More configurations are available in the [Examples](#examples) section].
 
 
 ## Reference
@@ -86,7 +89,7 @@ Below you can find the information on the custom options to set up the configura
 | _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
 | _host_ | Defines the hostname to where the metrics are sent. You can also set it inside _api_. | `string` | `127.0.0.1` | **NO** |
 | _path_ | Defines the API path to where the metrics are sent. You can also set it inside _api_. | `string` | `/tel/v2.0/metric` | **NO** |
-| _port_ | Defines the port where the metrics are sent. You can also set it inside _api_. | `string` | `2013` | **NO** |
+| _port_ | Defines the port where the metrics are sent. You can also set it inside _api_. | `string` | `443` | **NO** |
 | _token_ | Defines the token used to match incoming data to Statful. It can only be set inside _api_. | `string` | **none** | **YES** |
 | _timeout_ | Defines the timeout for the transport layers in **milliseconds**. It can only be set inside _api_. | `number` | `2000` | **NO** |
 
