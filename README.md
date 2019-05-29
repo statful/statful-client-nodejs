@@ -43,7 +43,7 @@ $ npm install statful-client --save
 
 ## Quick Start
 
-After installing Statful’s NodeJS Client, you are ready to push your metric into Statful by adding the below code into your js file:
+After installing Statful’s NodeJS Client, you are ready to push your metric into Statful by adding the below code into your JS file:
 
 ```javascript
 var Statful = require('statful-client');
@@ -54,6 +54,8 @@ var config = {
     transport: 'api',
     api: {
         token: 'STATFUL_API_TOKEN'
+        host: 'api.statful.com'
+        port: 443
     },
     tags: { cluster: 'production' }
 };
@@ -65,7 +67,8 @@ statful.counter('transactions', 1);
 
 > **IMPORTANT:** This configuration uses the default **host** and **port**. You can find these default values in the below table. 
 [More configurations are available in the [Examples](#examples) section].
-
+The host and port need to be added within the api Object as shown in the above code.
+Your token value is available in the 'Api Tokens' page of the Website.
 
 ## Reference
 
