@@ -66,8 +66,8 @@ statful.counter('transactions', 1);
 ```
 
 > **IMPORTANT:** This configuration uses the default **host** and **port**. You can find these default values in the below table. 
-[More configurations are available in the [Examples](#examples) section].
-The host and port need to be added within the api Object as shown in the above code.
+[More configurations are available in the [Examples](#examples) section].  
+The host and port need to be added within the api Object as shown in the above code.  
 Your token value is available in the 'Api Tokens' page of the Website.
 
 ## Reference
