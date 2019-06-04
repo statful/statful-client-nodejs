@@ -53,9 +53,7 @@ var config = {
     app: 'AccountService',
     transport: 'api',
     api: {
-        token: 'STATFUL_API_TOKEN'
-        host: 'api.statful.com'
-        port: 443
+        token: 'STATFUL_API_TOKEN'        
     },
     tags: { cluster: 'production' }
 };
@@ -67,7 +65,7 @@ statful.counter('transactions', 1);
 
 > **IMPORTANT:** This configuration uses the default **host** and **port**. You can find these default values in the below table. 
 [More configurations are available in the [Examples](#examples) section].  
-The host and port need to be added within the api Object as shown in the above code.  
+The host and port need to be added as shown in the above code, within the api or udp Object as applicable.  
 Your token value is available in the 'Api Tokens' page of the Website.
 
 ## Reference
@@ -90,9 +88,9 @@ Below you can find the information on the custom options to set up the configura
 | _sampleRate_ | Defines the rate sampling. **It should be a number between [1, 100]**. | `number` | `100` | **NO** |
 | _tags_ | Object for setting the global tags. | `object` | `{}` | **NO** |
 | _transport_ | Defines the transport layer to be used to send metrics.<br><br> **Valid Transports:** `udp, api` | `string` | **none** | **YES** |
-| _host_ | Defines the hostname to where the metrics are sent. It has to be set for api or UDP whichever is applicable. | `string` | UDP: `127.0.0.1` | **NO** |
+| _host_ | Defines the hostname to where the metrics are sent. It can be set for _api_ or _udp_ whichever is applicable. | `string` | udp:   `127.0.0.1`<br>api: `'api.statful.com'` | **NO** |
 | _path_ | Defines the API path to where the metrics are sent. It can only be set inside _api_. | `string` | `/tel/v2.0/metric` | **NO** |
-| _port_ | Defines the port where the metrics are sent. It can only be set inside _api_. | `string` | `443` | **NO** |
+| _port_ | Defines the port where the metrics are sent. It can be set for _api_ or _udp_ whichever is applicable. | `string` | udp: `2013`<br>api: `443` | **NO** |
 | _token_ | Defines the token used to match incoming data to Statful. It can only be set inside _api_. | `string` | **none** | **YES** |
 | _timeout_ | Defines the timeout for the transport layers in **milliseconds**. It can only be set inside _api_. | `number` | `2000` | **NO** |
 
